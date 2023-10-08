@@ -1,17 +1,14 @@
 package com.example.dashcam;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
-
-
+public class MapActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
     }
 }
