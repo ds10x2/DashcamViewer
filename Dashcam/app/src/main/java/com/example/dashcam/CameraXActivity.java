@@ -1,27 +1,41 @@
 package com.example.dashcam;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.Preview;
-import androidx.camera.core.VideoCapture;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.video.MediaStoreOutputOptions;
+import androidx.camera.video.Quality;
+import androidx.camera.video.QualitySelector;
 import androidx.camera.video.Recorder;
 import androidx.camera.video.Recording;
+import androidx.camera.video.VideoCapture;
+import androidx.camera.video.VideoRecordEvent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.media.MediaActionSound;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
+import android.Manifest;
 
 import com.example.dashcam.databinding.ActivityCameraxBinding;
 import com.example.dashcam.databinding.ActivityMainBinding;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,9 +44,13 @@ public class CameraXActivity extends AppCompatActivity {
 
     private ActivityCameraxBinding viewBinding;
     private ImageCapture imageCapture;
-    private VideoCapture videoCapture;
-    private Recording recording;
+    private VideoCapture<Recorder> videoCapture = null;
+    private Recording recording = null;
     private ExecutorService cameraExecutor;
+    private int cameraFacing = CameraSelector.LENS_FACING_BACK;
+
+
+
 
 
     @Override
@@ -47,8 +65,10 @@ public class CameraXActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
 
-        viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto());
-        viewBinding.videoCaptureButton.setOnClickListener(v -> captureVideo());
+        //viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto());
+        //viewBinding.videoCaptureButton.setOnClickListener(v -> captureVideo());
+
+        viewBinding.btnRecordStart.setOnClickListener(v -> startRecord());
 
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
@@ -59,6 +79,48 @@ public class CameraXActivity extends AppCompatActivity {
 
     private void captureVideo() {
         // Implement the logic for capturing a video.
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void startRecord(){
+        viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_stop_circle_24);
+
+        Recording recording1 = recording;
+        if(recording1 != null){
+            recording1.stop();
+            recording = null;
+            return;
+        }
+
+        //private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
+        String fileName = new SimpleDateFormat(FILENAME_FORMAT, Locale.getDefault()).format(System.currentTimeMillis());
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+        contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Recording");
+
+        MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+                .setContentValues(contentValues).build();
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        recording = videoCapture.getOutput().prepareRecording(CameraXActivity.this, options).withAudioEnabled()
+                .start(ContextCompat.getMainExecutor(CameraXActivity.this), videoRecordEvent -> {
+                   if(videoRecordEvent instanceof VideoRecordEvent.Start){
+                       viewBinding.btnRecordStart.setEnabled(true);
+                   }else if(videoRecordEvent instanceof VideoRecordEvent.Finalize){
+                       String msg = "Video capture succeeded: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getOutputResults().getOutputUri();
+                       Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                   }else{
+                       recording.close();
+                       recording = null;
+                       String msg = "Error : " + ((VideoRecordEvent.Finalize) videoRecordEvent).getError();
+                       Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                   }
+                   viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
+                });
+
     }
 
     private void startCamera() {
@@ -75,7 +137,10 @@ public class CameraXActivity extends AppCompatActivity {
                 preview.setSurfaceProvider(
                         viewBinding.viewFinder.getSurfaceProvider());
 
-                // Set up the capture use case to allow users to take photos
+                Recorder recorder = new Recorder.Builder()
+                        .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+                        .build();
+                videoCapture = VideoCapture.withOutput(recorder);
 
                 // Choose the camera by requiring a lens facing
                 CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
@@ -102,8 +167,8 @@ public class CameraXActivity extends AppCompatActivity {
     private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
     private static final int REQUEST_CODE_PERMISSIONS = 10;
     private static final String[] REQUIRED_PERMISSIONS = {
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.RECORD_AUDIO
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO
     };
 
     @Override
