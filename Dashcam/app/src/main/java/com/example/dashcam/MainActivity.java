@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //지도
         Button btn2 = (Button) findViewById(R.id.btn2);
         btn2.setOnClickListener(new View.OnClickListener(){
            @Override
@@ -24,6 +25,16 @@ public class MainActivity extends AppCompatActivity {
                Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                startActivity(intent);
            }
+        });
+
+        //카메라
+        Button btnCamera = (Button) findViewById(R.id.btnCamera);
+        btnCamera.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getApplicationContext(), CameraXActivity.class);
+                startActivity(intent);
+            }
         });
     }
 }

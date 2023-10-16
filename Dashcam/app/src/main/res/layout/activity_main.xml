@@ -24,6 +24,7 @@
             android:paddingTop="20dp"
             android:paddingRight="50dp"
             android:paddingBottom="20dp"
+            android:id="@+id/btnCamera"
             android:text="시작하기"></Button>
     </LinearLayout>
     <LinearLayout
