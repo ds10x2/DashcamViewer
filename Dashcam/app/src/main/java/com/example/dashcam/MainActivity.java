@@ -36,5 +36,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        //파일 탐색기
+        Button btnFileExplorer = (Button) findViewById(R.id.btn1);
+        btnFileExplorer.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getApplicationContext(), FileExplorerActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
