@@ -25,6 +25,7 @@ import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.media.MediaActionSound;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,7 +50,7 @@ public class CameraXActivity extends AppCompatActivity {
     private ExecutorService cameraExecutor;
     private int cameraFacing = CameraSelector.LENS_FACING_BACK;
 
-
+    private static final long RECORDING_DURATION = 10000; //10초 (밀리초)
 
 
 
@@ -73,13 +74,14 @@ public class CameraXActivity extends AppCompatActivity {
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
-    private void takePhoto() {
-        // Implement the logic for taking a photo.
+    private void stopRecording(){
+        Recording recording1 = recording;
+        if(recording1 != null){
+            recording1.stop();
+            recording = null;
+        }
     }
 
-    private void captureVideo() {
-        // Implement the logic for capturing a video.
-    }
 
     @SuppressWarnings("MissingPermission")
     private void startRecord(){
@@ -102,6 +104,19 @@ public class CameraXActivity extends AppCompatActivity {
         MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
                 .setContentValues(contentValues).build();
 
+        //녹화 타이머 설정
+        CountDownTimer timer = new CountDownTimer(RECORDING_DURATION, 1000){
+            @Override
+            public void onTick(long milliisUntilFinished){
+
+            }
+            @Override
+            public void onFinish(){
+                stopRecording();
+            }
+        };
+
+
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
             return;
         }
@@ -109,14 +124,17 @@ public class CameraXActivity extends AppCompatActivity {
                 .start(ContextCompat.getMainExecutor(CameraXActivity.this), videoRecordEvent -> {
                    if(videoRecordEvent instanceof VideoRecordEvent.Start){
                        viewBinding.btnRecordStart.setEnabled(true);
+                       timer.start(); //녹화 시작 시 타이머 시작
                    }else if(videoRecordEvent instanceof VideoRecordEvent.Finalize){
                        String msg = "Video capture succeeded: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getOutputResults().getOutputUri();
                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                       timer.cancel(); //녹화 완료 시 타이머 중지
                    }else{
                        recording.close();
                        recording = null;
                        String msg = "Error : " + ((VideoRecordEvent.Finalize) videoRecordEvent).getError();
                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                       timer.cancel(); //녹화 오류 시 타이머 중지
                    }
                    viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
                 });
