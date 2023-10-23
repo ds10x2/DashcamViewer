@@ -49,9 +49,9 @@ public class CameraXActivity extends AppCompatActivity {
     private Recording recording = null;
     private ExecutorService cameraExecutor;
     private int cameraFacing = CameraSelector.LENS_FACING_BACK;
+    private boolean isRecording = false;
 
-    private static final long RECORDING_DURATION = 10000; //10초 (밀리초)
-
+    private static final long RECORDING_DURATION = 10000; //10초 (밀리초) 타이머가 n번 돌아가는 총 시간
 
 
     @Override
@@ -69,10 +69,24 @@ public class CameraXActivity extends AppCompatActivity {
         //viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto());
         //viewBinding.videoCaptureButton.setOnClickListener(v -> captureVideo());
 
-        viewBinding.btnRecordStart.setOnClickListener(v -> startRecord());
+        viewBinding.btnRecordStart.setOnClickListener(v -> repeatRecording());
 
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
+
+
+    private CountDownTimer timer = new CountDownTimer(RECORDING_DURATION, 5000){ //countDownInterval : 타이머 1번 돌아가는 시간
+        @Override
+        public void onTick(long milliisUntilFinished){
+            startRecord();
+        }
+        @Override
+        public void onFinish(){
+            stopRecording(); //설정된 시간이 끝나면 반복을 멈춤
+            viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
+            isRecording = false;
+        }
+    };
 
     private void stopRecording(){
         Recording recording1 = recording;
@@ -82,16 +96,29 @@ public class CameraXActivity extends AppCompatActivity {
         }
     }
 
+    private void repeatRecording(){
+
+        if(isRecording) {
+            timer.cancel();
+            stopRecording(); //설정된 시간이 끝나면 반복을 멈춤
+            viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
+            isRecording = false;
+        }
+        else{
+            viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_stop_circle_24);
+            timer.start();
+            isRecording = true;
+        }
+    }
 
     @SuppressWarnings("MissingPermission")
     private void startRecord(){
-        viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_stop_circle_24);
 
         Recording recording1 = recording;
         if(recording1 != null){
             recording1.stop();
             recording = null;
-            return;
+        //    return;
         }
 
         //private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
@@ -104,18 +131,6 @@ public class CameraXActivity extends AppCompatActivity {
         MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
                 .setContentValues(contentValues).build();
 
-        //녹화 타이머 설정
-        CountDownTimer timer = new CountDownTimer(RECORDING_DURATION, 1000){
-            @Override
-            public void onTick(long milliisUntilFinished){
-
-            }
-            @Override
-            public void onFinish(){
-                stopRecording();
-            }
-        };
-
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
             return;
@@ -124,19 +139,15 @@ public class CameraXActivity extends AppCompatActivity {
                 .start(ContextCompat.getMainExecutor(CameraXActivity.this), videoRecordEvent -> {
                    if(videoRecordEvent instanceof VideoRecordEvent.Start){
                        viewBinding.btnRecordStart.setEnabled(true);
-                       timer.start(); //녹화 시작 시 타이머 시작
                    }else if(videoRecordEvent instanceof VideoRecordEvent.Finalize){
                        String msg = "Video capture succeeded: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getOutputResults().getOutputUri();
                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                       timer.cancel(); //녹화 완료 시 타이머 중지
                    }else{
                        recording.close();
                        recording = null;
                        String msg = "Error : " + ((VideoRecordEvent.Finalize) videoRecordEvent).getError();
                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                       timer.cancel(); //녹화 오류 시 타이머 중지
                    }
-                   viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
                 });
 
     }
