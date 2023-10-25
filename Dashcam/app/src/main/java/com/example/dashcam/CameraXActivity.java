@@ -23,16 +23,25 @@ import androidx.lifecycle.LifecycleOwner;
 
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.media.MediaActionSound;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
 import com.example.dashcam.databinding.ActivityCameraxBinding;
 import com.example.dashcam.databinding.ActivityMainBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.Priority;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.SimpleDateFormat;
@@ -60,11 +69,15 @@ public class CameraXActivity extends AppCompatActivity {
         viewBinding = ActivityCameraxBinding.inflate(getLayoutInflater()); //바인딩 클래스의 인스턴스 생성
         setContentView(viewBinding.getRoot());
 
+
+
         if(allPermissionsGranted()){
             startCamera();
         }else{
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
+
+        getLocation();
 
         //viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto());
         //viewBinding.videoCaptureButton.setOnClickListener(v -> captureVideo());
@@ -197,7 +210,9 @@ public class CameraXActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_PERMISSIONS = 10;
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
     @Override
@@ -211,5 +226,52 @@ public class CameraXActivity extends AppCompatActivity {
                 finish();
             }
         }
+    }
+
+    //위치 정보 불러오기
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+    private double currentLatitude = 1;
+    private double currentLongitude = 1;
+
+    public void getLocation(){
+
+        viewBinding.locationTextView.setText("위도 : " + currentLatitude + ", 경도: "+currentLongitude);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build();
+
+        //현재 위치 설정 받기
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+
+        //위치 업데이트 콜백 정의
+        locationCallback = new LocationCallback() {
+
+            public void onLocationResult(LocationResult locationResult) {
+                if(locationResult == null)
+                    return;
+                for(Location location : locationResult.getLocations()){
+                    //위치 정보로 UI 업데이트
+                    currentLatitude = location.getLatitude();
+                    currentLongitude = location.getLongitude();
+                    viewBinding.locationTextView.setText("위도 : " + currentLatitude + ", 경도: "+currentLongitude);
+
+                }
+            }
+
+        };
+
+    }
+
+    //위치 업데이트 중지
+    private void stopLocationUpdates(){
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 }

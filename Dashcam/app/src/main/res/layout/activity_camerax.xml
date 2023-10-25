@@ -11,6 +11,18 @@
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35sp"
+        app:layout_constraintTop_toTopOf= "parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/locationTextView"
+        android:text="위도 : 0.0, 경도: 0.0"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        />
     <ImageButton
         android:layout_width="60sp"
         android:layout_height="60sp"
@@ -22,6 +34,7 @@
         android:background="@android:color/transparent"
         android:id="@+id/btnRecordStart"
         />
+
 
 
     <!--
