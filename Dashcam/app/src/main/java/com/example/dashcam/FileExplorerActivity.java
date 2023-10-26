@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,6 +58,7 @@ public class FileExplorerActivity extends AppCompatActivity {
 
     }
 
+
     AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
         @SuppressLint("WrongConstant")
         @Override
@@ -67,11 +69,29 @@ public class FileExplorerActivity extends AppCompatActivity {
             }
             String Path = mCurrent + "/"  + Name;
             File f = new File(Path);
-            if(f.isDirectory()){
+            if(f.isDirectory()){ //폴더일 경우
                 mCurrent = Path;
                 refreshFiles();
             }else{
-                Toast.makeText(getApplicationContext(), (String) arFiles.get(position), 0).show();
+                //파일일 경우 파일 확장자 구하기
+                String extension = "";
+                int lastDotIndex = Name.lastIndexOf(".");
+                if (lastDotIndex != -1) {
+                    extension = Name.substring(lastDotIndex + 1);
+                }
+
+                //Toast.makeText(getApplicationContext(), extension, 0).show();
+
+                if(extension.equals("mp4")){
+
+                    Intent intent = new Intent(getApplicationContext(), VideoplayerActivity.class);
+                    intent.putExtra("Path", Path); //파일 경로 전달
+                    startActivity(intent);
+
+                }else{
+                    Toast.makeText(getApplicationContext(), (String) arFiles.get(position), 0).show();
+                }
+
             }
         }
     };
