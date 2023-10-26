@@ -54,13 +54,19 @@ public class CameraXActivity extends AppCompatActivity {
 
     private ActivityCameraxBinding viewBinding;
     private ImageCapture imageCapture;
-    private VideoCapture<Recorder> videoCapture = null;
-    private Recording recording = null;
-    private ExecutorService cameraExecutor;
-    private int cameraFacing = CameraSelector.LENS_FACING_BACK;
+    VideoCapture<Recorder> videoCapture = VideoCapture.withOutput(new Recorder.Builder().build());
+    Recording recording = null;
+    ExecutorService cameraExecutor;
+    int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private boolean isRecording = false;
 
     private static final long RECORDING_DURATION = 10000; //10초 (밀리초) 타이머가 n번 돌아가는 총 시간
+
+    private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            startCamera(cameraFacing);
+        }
+    });
 
 
     @Override
@@ -72,7 +78,7 @@ public class CameraXActivity extends AppCompatActivity {
 
 
         if(allPermissionsGranted()){
-            startCamera();
+            startCamera(cameraFacing);
         }else{
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
@@ -119,8 +125,9 @@ public class CameraXActivity extends AppCompatActivity {
         }
         else{
             viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_stop_circle_24);
-            timer.start();
             isRecording = true;
+            timer.start();
+
         }
     }
 
@@ -139,7 +146,7 @@ public class CameraXActivity extends AppCompatActivity {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
-        contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Recording");
+        contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/Recording");
 
         MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
                 .setContentValues(contentValues).build();
@@ -148,24 +155,29 @@ public class CameraXActivity extends AppCompatActivity {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
             return;
         }
-        recording = videoCapture.getOutput().prepareRecording(CameraXActivity.this, options).withAudioEnabled()
-                .start(ContextCompat.getMainExecutor(CameraXActivity.this), videoRecordEvent -> {
+        recording = videoCapture.getOutput().prepareRecording(getApplicationContext(), options).withAudioEnabled()
+                .start(ContextCompat.getMainExecutor(getApplicationContext()), videoRecordEvent -> {
+
                    if(videoRecordEvent instanceof VideoRecordEvent.Start){
+                       Toast.makeText(getApplicationContext(), "start", Toast.LENGTH_SHORT).show();
                        viewBinding.btnRecordStart.setEnabled(true);
-                   }else if(videoRecordEvent instanceof VideoRecordEvent.Finalize){
-                       String msg = "Video capture succeeded: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getOutputResults().getOutputUri();
-                       Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                   }else{
-                       recording.close();
-                       recording = null;
-                       String msg = "Error : " + ((VideoRecordEvent.Finalize) videoRecordEvent).getError();
-                       Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+
+                   }else if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
+                       if (!((VideoRecordEvent.Finalize) videoRecordEvent).hasError()) {
+                           String msg = "Video capture succeeded: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getOutputResults().getOutputUri();
+                           Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                       } else {
+                           recording.close();
+                           recording = null;
+                           String msg = "Error: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getError();
+                           Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                       }
                    }
                 });
 
     }
 
-    private void startCamera() {
+    private void startCamera(int cameraFacing) {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
                 ProcessCameraProvider.getInstance(this);
 
@@ -185,9 +197,10 @@ public class CameraXActivity extends AppCompatActivity {
                 videoCapture = VideoCapture.withOutput(recorder);
 
                 // Choose the camera by requiring a lens facing
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                CameraSelector cameraSelector = new CameraSelector.Builder()
+                        .requireLensFacing(cameraFacing).build();
                 cameraProvider.unbindAll();
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview);
+                Camera camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture);
 
             } catch (Exception exc) {
                 Log.e(TAG, "Use case binding failed", exc);
@@ -220,7 +233,7 @@ public class CameraXActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
-                startCamera();
+                startCamera(cameraFacing);
             } else {
                 Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
                 finish();
