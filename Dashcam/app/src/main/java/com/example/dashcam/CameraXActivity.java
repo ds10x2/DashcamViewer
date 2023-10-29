@@ -45,6 +45,9 @@ import com.google.android.gms.location.Priority;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -91,6 +94,12 @@ public class CameraXActivity extends AppCompatActivity {
         viewBinding.btnRecordStart.setOnClickListener(v -> repeatRecording());
 
         cameraExecutor = Executors.newSingleThreadExecutor();
+
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        String currentDate = dateFormat.format(date);
+        viewBinding.dateTextView.setText(currentDate);
     }
 
 

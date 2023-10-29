@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.example.dashcam.databinding.ActivityCameraxBinding;
 import com.example.dashcam.databinding.ActivityVideoplayerBinding;
 
+import java.io.File;
+
 public class VideoplayerActivity extends AppCompatActivity {
     private ActivityVideoplayerBinding viewBinding;
 
@@ -40,26 +42,38 @@ public class VideoplayerActivity extends AppCompatActivity {
             }
         });
 
-        viewBinding.videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
+        viewBinding.videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void onCompletion(MediaPlayer mp){
+            public void onCompletion(MediaPlayer mp) {
                 //동영상 재생 완료 후
                 viewBinding.playbtn.setVisibility(View.VISIBLE);
             }
         });
 
-        viewBinding.playbtn.setOnClickListener(new View.OnClickListener(){
+        viewBinding.playbtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                if(!viewBinding.videoView.isPlaying()){
+            public void onClick(View v) {
+                if (!viewBinding.videoView.isPlaying()) {
                     viewBinding.videoView.start();
                     viewBinding.playbtn.setVisibility(View.INVISIBLE);
                 }
             }
         });
 
+
+        String fileName = extractFileName(path);
+        viewBinding.textTitle.setText(fileName);
+
     }
 
+    public String extractFileName(String path) {
+        if (path != null) {
+            int lastSeparatorIndex = path.lastIndexOf(File.separator);
+            if (lastSeparatorIndex != -1)
+                return path.substring(lastSeparatorIndex + 1);
+        }
+        return null;
+    }
 
 
 }

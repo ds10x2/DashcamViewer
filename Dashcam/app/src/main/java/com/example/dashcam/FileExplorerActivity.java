@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ public class FileExplorerActivity extends AppCompatActivity {
     ArrayAdapter mAdapter;
     ArrayList arFiles;
     String mMovies;
+    ImageButton mBack;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static String[] permission = {
@@ -48,6 +51,7 @@ public class FileExplorerActivity extends AppCompatActivity {
         mCurrentTxt = (TextView) findViewById(R.id.current);
         mFileList = (ListView) findViewById(R.id.filelist);
         arFiles = new ArrayList();
+        mBack = (ImageButton) findViewById(R.id.btnBack);
 
         //mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
         //mCurrent = mRoot;
@@ -62,6 +66,15 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         allPermissionsGranted();
         refreshFiles();
+
+
+        mBack.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
