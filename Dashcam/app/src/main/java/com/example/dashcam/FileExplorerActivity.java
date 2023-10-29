@@ -53,7 +53,7 @@ public class FileExplorerActivity extends AppCompatActivity {
         arFiles = new ArrayList();
         mBack = (ImageButton) findViewById(R.id.btnBack);
 
-        //mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
         //mCurrent = mRoot;
 
         mMovies = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath();
