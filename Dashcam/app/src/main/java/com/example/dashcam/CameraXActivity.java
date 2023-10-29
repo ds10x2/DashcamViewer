@@ -165,6 +165,7 @@ public class CameraXActivity extends AppCompatActivity {
                    }else if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
                        if (!((VideoRecordEvent.Finalize) videoRecordEvent).hasError()) {
                            String msg = "Video capture succeeded: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getOutputResults().getOutputUri();
+                           Log.i(TAG, msg);
                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                        } else {
                            recording.close();

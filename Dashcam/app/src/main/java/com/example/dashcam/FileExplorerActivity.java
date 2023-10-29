@@ -1,5 +1,7 @@
 package com.example.dashcam;
 
+import static android.os.Environment.DIRECTORY_MOVIES;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -30,6 +32,7 @@ public class FileExplorerActivity extends AppCompatActivity {
     ListView mFileList;
     ArrayAdapter mAdapter;
     ArrayList arFiles;
+    String mMovies;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static String[] permission = {
@@ -46,15 +49,19 @@ public class FileExplorerActivity extends AppCompatActivity {
         mFileList = (ListView) findViewById(R.id.filelist);
         arFiles = new ArrayList();
 
-        mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mCurrent = mRoot;
+        //mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
+        //mCurrent = mRoot;
+
+        mMovies = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath();
+        mCurrent = mMovies;
 
         mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arFiles);
         mFileList.setAdapter(mAdapter); // 리스트 뷰에 어댑터 연결
         mFileList.setOnItemClickListener(mItemClickListener);
 
-        refreshFiles();
+
         allPermissionsGranted();
+        refreshFiles();
 
     }
 
@@ -141,15 +148,13 @@ public class FileExplorerActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
-    private boolean allPermissionsGranted() {
+    private void allPermissionsGranted() {
         for (String permission : REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }else{
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+                return;
             }
         }
-        return true;
     }
 
     private static final int REQUEST_CODE_PERMISSIONS = 10;
@@ -162,7 +167,15 @@ public class FileExplorerActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
+            boolean allGranted = true;
+            for(int grantResult : grantResults){
+                if(grantResult != PackageManager.PERMISSION_GRANTED){
+                    allGranted = false;
+                    break;
+                }
+            }
+
+            if (allGranted) {
                 Log.i(TAG, "Permissions granted");
             } else {
                 Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
