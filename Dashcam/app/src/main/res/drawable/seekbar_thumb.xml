@@ -3,7 +3,7 @@
     <!-- 눌린 상태일 때 -->
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="#fff" /> <!-- 여기서 색상을 원하는 색으로 변경 -->
+            <solid android:color="#333333" /> <!-- 여기서 색상을 원하는 색으로 변경 -->
             <corners android:radius="5dp"/>
             <size android:width="10dp" android:height="10dp" />
         </shape>
@@ -11,7 +11,7 @@
     <!-- 기본 상태일 때 -->
     <item>
         <shape>
-            <solid android:color="#fff" /> <!-- 여기서 색상을 원하는 색으로 변경 -->
+            <solid android:color="#333333" /> <!-- 여기서 색상을 원하는 색으로 변경 -->
             <corners android:radius="5dp"/>
             <size android:width="10dp" android:height="10dp" />
         </shape>
