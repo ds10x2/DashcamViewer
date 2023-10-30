@@ -56,7 +56,7 @@ public class FileExplorerActivity extends AppCompatActivity {
         mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
         //mCurrent = mRoot;
 
-        mMovies = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath();
+        mMovies = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath() + "/Recording";
         mCurrent = mMovies;
 
         mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arFiles);
