@@ -64,7 +64,8 @@ public class CameraXActivity extends AppCompatActivity {
     ExecutorService cameraExecutor;
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private boolean isRecording = false;
-    private static final long RECORDING_DURATION = 10000; //10초 (밀리초) 타이머가 n번 돌아가는 총 시간
+    private static final long RECORDING_DURATION = 30000; //30초 (밀리초) 타이머가 n번 돌아가는 총 시간
+    private static final long COUNTDOWN_INTERVAL = 15000;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLatitude = 1;
@@ -128,7 +129,7 @@ public class CameraXActivity extends AppCompatActivity {
     }
 
 
-    private CountDownTimer timer = new CountDownTimer(RECORDING_DURATION, 5000){ //countDownInterval : 타이머 1번 돌아가는 시간
+    private CountDownTimer timer = new CountDownTimer(RECORDING_DURATION, COUNTDOWN_INTERVAL){ //countDownInterval : 타이머 1번 돌아가는 시간
         @Override
         public void onTick(long milliisUntilFinished){
             startRecord();

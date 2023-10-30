@@ -18,11 +18,8 @@ import java.io.File;
 
 public class VideoplayerActivity extends AppCompatActivity {
     private ActivityVideoplayerBinding viewBinding;
-    public boolean isTouch = false;
-    public boolean isPrepared = false;
-    Runnable runnable;
     Handler handler;
-
+    private boolean isPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +34,8 @@ public class VideoplayerActivity extends AppCompatActivity {
 
         MediaController controller = new MediaController(getApplicationContext());
         viewBinding.videoView.setMediaController(controller);
-
         viewBinding.videoView.requestFocus();
-
         viewBinding.videoView.setVideoPath(path);
-
         viewBinding.seekBar.bringToFront();
 
         handler = new Handler();
@@ -83,9 +77,14 @@ public class VideoplayerActivity extends AppCompatActivity {
             public void onCompletion(MediaPlayer mp) {
                 //동영상 재생 완료 후
                 viewBinding.playbtn.setVisibility(View.VISIBLE);
+                viewBinding.playbtn.setEnabled(true);
+                viewBinding.playbtn2.setImageResource(R.drawable.baseline_play_arrow_24);
             }
         });
 
+        //파일명 가져오기
+        String fileName = extractFileName(path);
+        viewBinding.textTitle.setText("파일명: " + fileName);
 
         //재생 버튼
         viewBinding.playbtn.setOnClickListener(new View.OnClickListener() {
@@ -94,16 +93,35 @@ public class VideoplayerActivity extends AppCompatActivity {
                 if (!viewBinding.videoView.isPlaying()) {
                     viewBinding.videoView.start();
                     viewBinding.playbtn.setVisibility(View.INVISIBLE);
+                    viewBinding.playbtn.setEnabled(false);
+
+                    viewBinding.playbtn2.setImageResource(R.drawable.baseline_pause_24);
 
                     updateSeekBar();
                 }
             }
         });
 
+        viewBinding.playbtn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!viewBinding.videoView.isPlaying()){
+                    viewBinding.videoView.start();
+                    viewBinding.playbtn2.setImageResource(R.drawable.baseline_pause_24);
 
-        String fileName = extractFileName(path);
-        viewBinding.textTitle.setText(fileName);
+                    viewBinding.playbtn.setVisibility(View.INVISIBLE);
+                    viewBinding.playbtn.setEnabled(false);
 
+                    updateSeekBar();
+                }
+                else{
+                    viewBinding.videoView.pause();
+                    viewBinding.playbtn2.setImageResource(R.drawable.baseline_play_arrow_24);
+                    viewBinding.playbtn.setVisibility(View.VISIBLE);
+                    viewBinding.playbtn.setEnabled(true);
+                }
+            }
+        });
 
 
 
