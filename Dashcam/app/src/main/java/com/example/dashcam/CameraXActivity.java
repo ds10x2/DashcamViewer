@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -42,6 +43,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.text.SimpleDateFormat;
@@ -62,14 +64,19 @@ public class CameraXActivity extends AppCompatActivity {
     ExecutorService cameraExecutor;
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private boolean isRecording = false;
-
     private static final long RECORDING_DURATION = 10000; //10초 (밀리초) 타이머가 n번 돌아가는 총 시간
 
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private double currentLatitude = 1;
+    private double currentLongitude = 1;
+
+    /*
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             startCamera(cameraFacing);
         }
     });
+    */
 
 
     @Override
@@ -78,28 +85,46 @@ public class CameraXActivity extends AppCompatActivity {
         viewBinding = ActivityCameraxBinding.inflate(getLayoutInflater()); //바인딩 클래스의 인스턴스 생성
         setContentView(viewBinding.getRoot());
 
-
-
-        if(allPermissionsGranted()){
+        //권한
+        if (allPermissionsGranted()) {
             startCamera(cameraFacing);
-        }else{
+        } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
-
-        getLocation();
-
-        //viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto());
-        //viewBinding.videoCaptureButton.setOnClickListener(v -> captureVideo());
-
         viewBinding.btnRecordStart.setOnClickListener(v -> repeatRecording());
-
         cameraExecutor = Executors.newSingleThreadExecutor();
 
+        //오늘 날짜
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         String currentDate = dateFormat.format(date);
         viewBinding.dateTextView.setText(currentDate);
+
+        //위치 정보
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+        }else{
+            getLocation();
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
+
+        /*
+        fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if(location != null) {
+                            currentLatitude = location.getLatitude();
+                            currentLongitude = location.getLongitude();
+                            viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
+                        }else{
+                        }
+                    }
+                });
+
+         */
     }
 
 
@@ -212,6 +237,8 @@ public class CameraXActivity extends AppCompatActivity {
                 cameraProvider.unbindAll();
                 Camera camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture);
 
+
+
             } catch (Exception exc) {
                 Log.e(TAG, "Use case binding failed", exc);
 
@@ -234,8 +261,9 @@ public class CameraXActivity extends AppCompatActivity {
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
 
     @Override
@@ -253,48 +281,30 @@ public class CameraXActivity extends AppCompatActivity {
 
     //위치 정보 불러오기
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
-    private double currentLatitude = 1;
-    private double currentLongitude = 1;
 
     public void getLocation(){
 
-        viewBinding.locationTextView.setText("위도 : " + currentLatitude + ", 경도: "+currentLongitude);
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
         locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build();
 
-        //현재 위치 설정 받기
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
-
-
-        //위치 업데이트 콜백 정의
         locationCallback = new LocationCallback() {
-
-            public void onLocationResult(LocationResult locationResult) {
-                if(locationResult == null)
-                    return;
-                for(Location location : locationResult.getLocations()){
-                    //위치 정보로 UI 업데이트
-                    currentLatitude = location.getLatitude();
-                    currentLongitude = location.getLongitude();
-                    viewBinding.locationTextView.setText("위도 : " + currentLatitude + ", 경도: "+currentLongitude);
-
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                if(locationResult != null){
+                    Location location = locationResult.getLastLocation();
+                    if(location != null){
+                        currentLatitude = location.getLatitude();
+                        currentLongitude = location.getLongitude();
+                        viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
+                    }
                 }
             }
-
         };
 
     }
 
-    //위치 업데이트 중지
-    private void stopLocationUpdates(){
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-    }
+
 }
