@@ -70,6 +70,10 @@ public class CameraXActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLatitude = 1;
     private double currentLongitude = 1;
+    SQLiteHelper sqLiteHelper;
+    private String startTime;
+    private String arriveTime;
+
 
     /*
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
@@ -85,6 +89,7 @@ public class CameraXActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         viewBinding = ActivityCameraxBinding.inflate(getLayoutInflater()); //바인딩 클래스의 인스턴스 생성
         setContentView(viewBinding.getRoot());
+        sqLiteHelper = new SQLiteHelper(this);
 
         //권한
         if (allPermissionsGranted()) {
@@ -139,6 +144,7 @@ public class CameraXActivity extends AppCompatActivity {
             stopRecording(); //설정된 시간이 끝나면 반복을 멈춤
             viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
             isRecording = false;
+            sqLiteHelper.insertDriving(startTime, arriveTime);
         }
     };
 
@@ -176,12 +182,19 @@ public class CameraXActivity extends AppCompatActivity {
         //    return;
         }
 
-        //private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
-        String fileName = new SimpleDateFormat(FILENAME_FORMAT, Locale.getDefault()).format(System.currentTimeMillis());
+        String FILENAME_FORMAT = "yyyyMMddHHmmss_SSS";
+        String fileName = new SimpleDateFormat(FILENAME_FORMAT, Locale.getDefault()).format(new Date());
+        //String fileName = new SimpleDateFormat(FILENAME_FORMAT, Locale.getDefault()).format(System.currentTimeMillis());
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
         contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/Recording");
+
+        if(startTime == null) {
+            startTime = fileName;
+            sqLiteHelper.createTable("t"+startTime);
+        }
+        arriveTime = fileName;
 
         MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
                 .setContentValues(contentValues).build();
@@ -300,6 +313,9 @@ public class CameraXActivity extends AppCompatActivity {
                         currentLatitude = location.getLatitude();
                         currentLongitude = location.getLongitude();
                         viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
+                        if(isRecording){
+                            sqLiteHelper.insertLocation("t"+startTime, currentLatitude, currentLatitude);
+                        }
                     }
                 }
             }
