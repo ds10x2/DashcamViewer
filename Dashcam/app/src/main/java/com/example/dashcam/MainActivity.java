@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-
+    private SQLiteHelper sqLiteHelper;
+    private SQLiteDatabase db;
 
 
     @Override
@@ -17,12 +19,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sqLiteHelper = SQLiteHelperSingleton.getInstance(this);
+        db = sqLiteHelper.getWritableDatabase();
+
         //지도
         Button btn2 = (Button) findViewById(R.id.btn2);
         btn2.setOnClickListener(new View.OnClickListener(){
            @Override
            public void onClick(View view){
-               Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+               Intent intent = new Intent(getApplicationContext(), RoutelistActivity.class);
                startActivity(intent);
            }
         });
@@ -46,5 +51,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        db.close();
     }
 }

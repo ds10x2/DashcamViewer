@@ -65,13 +65,13 @@ public class CameraXActivity extends AppCompatActivity {
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private boolean isRecording = false;
     private static final long RECORDING_DURATION = 30000; //30초 (밀리초) 타이머가 n번 돌아가는 총 시간
-    private static final long COUNTDOWN_INTERVAL = 15000;
+    private static final long COUNTDOWN_INTERVAL = 10000;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLatitude = 1;
     private double currentLongitude = 1;
     SQLiteHelper sqLiteHelper;
-    private String startTime;
+    private String startTime = null;
     private String arriveTime;
 
 
@@ -89,7 +89,7 @@ public class CameraXActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         viewBinding = ActivityCameraxBinding.inflate(getLayoutInflater()); //바인딩 클래스의 인스턴스 생성
         setContentView(viewBinding.getRoot());
-        sqLiteHelper = new SQLiteHelper(this);
+        sqLiteHelper = SQLiteHelperSingleton.getInstance(this);
 
         //권한
         if (allPermissionsGranted()) {
@@ -145,6 +145,7 @@ public class CameraXActivity extends AppCompatActivity {
             viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
             isRecording = false;
             sqLiteHelper.insertDriving(startTime, arriveTime);
+            startTime = null;
         }
     };
 
@@ -163,6 +164,8 @@ public class CameraXActivity extends AppCompatActivity {
             stopRecording(); //설정된 시간이 끝나면 반복을 멈춤
             viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
             isRecording = false;
+            sqLiteHelper.insertDriving(startTime, arriveTime);
+            startTime = null;
         }
         else{
             viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_stop_circle_24);
@@ -190,11 +193,13 @@ public class CameraXActivity extends AppCompatActivity {
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
         contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/Recording");
 
+
         if(startTime == null) {
             startTime = fileName;
-            sqLiteHelper.createTable("t"+startTime);
+            sqLiteHelper.createTable(startTime);
         }
         arriveTime = fileName;
+
 
         MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
                 .setContentValues(contentValues).build();
@@ -314,7 +319,7 @@ public class CameraXActivity extends AppCompatActivity {
                         currentLongitude = location.getLongitude();
                         viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
                         if(isRecording){
-                            sqLiteHelper.insertLocation("t"+startTime, currentLatitude, currentLatitude);
+                            sqLiteHelper.insertLocation(startTime, arriveTime, currentLatitude, currentLongitude);
                         }
                     }
                 }

@@ -9,8 +9,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "location.db";
@@ -58,6 +61,52 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public String getTableName(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT Start FROM Driving Where mID = " + id, null);
+        String tableName = null;
+        if(cursor.moveToFirst()){
+            tableName = "t" + cursor.getString(0);
+        }
+        cursor.close();
+        return tableName;
+    }
+
+    public List<LatLng> getLatLng(String tableName, String time){
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<LatLng> latLngList = new ArrayList<>();
+        String query = "SELECT Latitude, Longitude FROM " + tableName + " WHERE Start = " + time;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        int latitudeIndex = cursor.getColumnIndex("Latitude");
+        int longitudeIndex = cursor.getColumnIndex("Longitude");
+
+        while(cursor.moveToNext()){
+            double latitude = cursor.getDouble(latitudeIndex);
+            double longitude = cursor.getDouble(longitudeIndex);
+
+            LatLng latLng = new LatLng(latitude, longitude);
+            latLngList.add(latLng);
+        }
+
+        cursor.close();
+        return latLngList;
+    }
+
+    public ArrayList<String> getTime(String tableName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<String> result = new ArrayList<>();
+        String query = "SELECT DISTINCT Start FROM " + tableName;
+        Cursor cursor = db.rawQuery(query, null);
+
+        while(cursor.moveToNext()){
+            result.add(cursor.getString(0));
+        }
+        cursor.close();
+        return result;
+    }
+
     public void insertDriving(String st, String ar){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -76,23 +125,24 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     //주행기록 시작할 때마다 table 생성
     public void createTable(String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + tableName);
+        db.execSQL("DROP TABLE IF EXISTS " + "t" + tableName);
 
-        String query = "CREATE TABLE " + tableName
-                + "(mID INTEGER PRIMARY KEY AUTOINCREMENT, Latitude real, Longitude real);";
+        String query = "CREATE TABLE " + "t" + tableName
+                + "(mID INTEGER PRIMARY KEY AUTOINCREMENT, Start text, Latitude real, Longitude real);";
 
         db.execSQL(query);
     }
 
     //주행 기록
-    public void insertLocation(String tableName, double lat, double lon){
+    public void insertLocation(String tableName, String StartTime, double lat, double lon){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
+        cv.put("Start", StartTime);
         cv.put("Latitude", lat);
         cv.put("Longitude", lon);
 
-        long result = db.insert(tableName, null, cv);
+        long result = db.insert("t" + tableName, null, cv);
 
         if(result == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
@@ -102,9 +152,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public void dropTable(String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS " + tableName);
-
-        String query = "DELETE FROM Driving WHERE mID = '" + tableName + "';";
-        db.execSQL(query);
+        db.execSQL("DROP TABLE IF EXISTS " + "t" + tableName);
     }
 }
