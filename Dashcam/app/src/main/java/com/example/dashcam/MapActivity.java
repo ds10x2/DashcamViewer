@@ -65,9 +65,14 @@ public class MapActivity extends AppCompatActivity
 
         LatLng zoomPoint = new LatLng(37.5136944, 126.735084 );
 
+        LatLng lastPoint = null;
 
         for(String start : timeList){
             List<LatLng> latLngs = sqLiteHelper.getLatLng(tableName, start);
+
+            if(lastPoint != null){
+                latLngs.add(0, lastPoint);
+            }
 
 
             //googleMap.addMarker(new MarkerOptions()
@@ -79,6 +84,8 @@ public class MapActivity extends AppCompatActivity
                     .addAll(latLngs));
 
             polyline1.setTag(start);
+
+            lastPoint = latLngs.get(latLngs.size()-1);
 
         }
 

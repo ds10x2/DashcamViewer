@@ -31,17 +31,6 @@ public class RoutelistActivity extends AppCompatActivity {
         setContentView(viewBinding.getRoot());
         sqLiteHelper = SQLiteHelperSingleton.getInstance(this);
 
-        tableName = sqLiteHelper.getTableName(3);
-
-        viewBinding.btnMap.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Intent intent = new Intent(getApplicationContext(), MapActivity.class);
-                intent.putExtra("TableName", tableName);
-                startActivity(intent);
-            }
-        });
-
         arRoutes = sqLiteHelper.getDriving();
         mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arRoutes);
         viewBinding.routeList.setAdapter(mAdapter);

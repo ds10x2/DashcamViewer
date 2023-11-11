@@ -11,9 +11,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,6 +38,8 @@ public class FileExplorerActivity extends AppCompatActivity {
     ArrayList arFiles;
     String mMovies;
     ImageButton mBack;
+    Button mFavorite;
+    Button mEvery;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static String[] permission = {
@@ -52,6 +56,8 @@ public class FileExplorerActivity extends AppCompatActivity {
         mFileList = (ListView) findViewById(R.id.filelist);
         arFiles = new ArrayList();
         mBack = (ImageButton) findViewById(R.id.btnBack);
+        mFavorite = (Button) findViewById(R.id.btnFav);
+        mEvery = (Button) findViewById(R.id.btnEvery);
 
         mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
         //mCurrent = mRoot;
@@ -73,6 +79,46 @@ public class FileExplorerActivity extends AppCompatActivity {
             public void onClick(View view){
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        mFavorite.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent){
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                    //버튼이 눌렸을 때
+                    mFavorite.setBackgroundColor(Color.rgb(245, 245, 245));
+                }else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                    mFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
+                    mFavorite.setTextColor(Color.rgb(255,255,255));
+
+                    mEvery.setBackgroundColor(Color.rgb(252, 252, 252));
+                    mEvery.setTextColor(Color.rgb(0, 0, 0));
+                }
+                else{
+                    mFavorite.setBackgroundColor(Color.rgb(252,252,252));
+                }
+                return false;
+            }
+        });
+
+        mEvery.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent){
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                    //버튼이 눌렸을 때
+                    mEvery.setBackgroundColor(Color.rgb(245, 245, 245));
+                }else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                    mEvery.setBackgroundColor(Color.rgb(124, 134, 222));
+                    mEvery.setTextColor(Color.rgb(255,255,255));
+
+                    mFavorite.setBackgroundColor(Color.rgb(252, 252, 252));
+                    mFavorite.setTextColor(Color.rgb(0, 0, 0));
+                }
+                else{
+                    mEvery.setBackgroundColor(Color.rgb(252,252,252));
+                }
+                return false;
             }
         });
 
@@ -116,24 +162,6 @@ public class FileExplorerActivity extends AppCompatActivity {
         }
     };
 
-    public void mOnClick(View v){
-        switch(v.getId()){
-            case R.id.btnroot:
-                if(mCurrent.compareTo(mRoot) != 0){
-                    mCurrent = mRoot;
-                    refreshFiles();
-                }
-                break;
-            case R.id.btnup:
-                if(mCurrent.compareTo(mRoot) != 0){
-                    int end = mCurrent.lastIndexOf("/");
-                    String uppath = mCurrent.substring(0, end);
-                    mCurrent = uppath;
-                    refreshFiles();
-                }
-                break;
-        }
-    }
 
     void refreshFiles(){
         mCurrentTxt.setText(mCurrent);
