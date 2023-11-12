@@ -30,6 +30,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
@@ -64,8 +66,8 @@ public class CameraXActivity extends AppCompatActivity {
     ExecutorService cameraExecutor;
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private boolean isRecording = false;
-    private static final long RECORDING_DURATION = 30000; //30초 (밀리초) 타이머가 n번 돌아가는 총 시간
-    private static final long COUNTDOWN_INTERVAL = 10000;
+    private long RECORDING_DURATION = 30000; //30초 (밀리초) 타이머가 n번 돌아가는 총 시간
+    private long COUNTDOWN_INTERVAL = 10000;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLatitude = 1;
@@ -73,6 +75,8 @@ public class CameraXActivity extends AppCompatActivity {
     SQLiteHelper sqLiteHelper;
     private String startTime = null;
     private String arriveTime;
+    private int cnt = 0;
+    private int cntEntire = 0;
 
 
     /*
@@ -97,7 +101,10 @@ public class CameraXActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
+
+        setTextRec();
         viewBinding.btnRecordStart.setOnClickListener(v -> repeatRecording());
+        viewBinding.btnSettingRec.setOnClickListener(v -> settingRecCycle());
         cameraExecutor = Executors.newSingleThreadExecutor();
 
         //오늘 날짜
@@ -116,21 +123,50 @@ public class CameraXActivity extends AppCompatActivity {
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
 
-        /*
-        fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if(location != null) {
-                            currentLatitude = location.getLatitude();
-                            currentLongitude = location.getLongitude();
-                            viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
-                        }else{
-                        }
-                    }
-                });
+    }
 
-         */
+    private void settingRecCycle(){
+        viewBinding.settingRec.setVisibility(View.VISIBLE);
+        viewBinding.textRec.setVisibility(View.INVISIBLE);
+        viewBinding.textRecCycle.setVisibility(View.INVISIBLE);
+
+        viewBinding.seekBarMaxRec.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                //Seekbar 값 변경될 때마다 호출
+                viewBinding.textSeekMaxRec.setText(progress + "분");
+                //30000 == 30초
+                RECORDING_DURATION = progress * 60000;
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar){
+                //첫 눌림에 호출
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar){
+                //드래그 떼어냈을 때
+            }
+        });
+
+        viewBinding.seekBarRecCycle.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                viewBinding.textSeekRecCycle.setText(progress * 10 + "초");
+                COUNTDOWN_INTERVAL = progress * 10000;
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar){}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar){}
+        });
+
+        viewBinding.btnSettingDone.setOnClickListener(view -> {
+            setTextRec();
+            viewBinding.settingRec.setVisibility(View.GONE);
+            viewBinding.textRec.setVisibility(View.VISIBLE);
+            viewBinding.textRecCycle.setVisibility(View.VISIBLE);
+        });
     }
 
 
@@ -326,6 +362,14 @@ public class CameraXActivity extends AppCompatActivity {
             }
         };
 
+    }
+
+    private void setTextRec(){
+        long maxRec = RECORDING_DURATION / 60000;
+        viewBinding.textRec.setText("최대 녹화 시간 " + maxRec + "분");
+
+        long recCycle = COUNTDOWN_INTERVAL / 1000;
+        viewBinding.textRecCycle.setText("녹화 주기 " +recCycle + "초");
     }
 
 
