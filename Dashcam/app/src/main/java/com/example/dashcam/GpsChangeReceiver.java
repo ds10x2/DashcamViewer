@@ -18,7 +18,7 @@ public class GpsChangeReceiver extends android.content.BroadcastReceiver{
         }
     }
 
-    private boolean checkGpsStatus(Context context){
+    public boolean checkGpsStatus(Context context){
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 

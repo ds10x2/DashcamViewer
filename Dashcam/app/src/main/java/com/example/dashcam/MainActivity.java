@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
         imageGps = (ImageView) findViewById(R.id.imageGps);
         textGps = (TextView) findViewById(R.id.textGPSonoff);
 
+        boolean isGpsEnabled = gpsChangeReceiver.checkGpsStatus(this);
+        updateGpsStatusIcon(isGpsEnabled);
+
         //지도
         Button btn2 = (Button) findViewById(R.id.btn2);
         btn2.setOnClickListener(new View.OnClickListener(){
@@ -74,8 +77,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy(){
-        super.onDestroy();
+        if (gpsChangeReceiver != null) {
+            unregisterReceiver(gpsChangeReceiver);
+        }
         db.close();
+
+        super.onDestroy();
     }
 
     public void updateGpsStatusIcon(boolean isGpsEnabled){
