@@ -38,6 +38,74 @@
             ></ImageView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/top"
+        app:layout_constraintRight_toLeftOf="@+id/textGPSonoff"
+        android:src="@drawable/baseline_location_on_24"
+        android:layout_marginTop="18dp"
+        android:id="@+id/imageGps"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/top"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="25dp"
+        android:text="위치 ON"
+        android:fontFamily="@font/nanumsquareroundeb"
+        android:textColor="@color/main_color"
+        android:textSize="16dp"
+        android:id="@+id/textGPSonoff"/>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/top"
+        app:layout_constraintBottom_toTopOf="@id/btnCamera"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@drawable/circlemain"
+        android:id="@+id/mainCircle"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/textStorageSpace"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="현재 위치 : xx시 xx동"
+        android:fontFamily="@font/nanumsquareroundb"
+        android:id="@+id/textNowLocation"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/mainCircle"
+        app:layout_constraintBottom_toBottomOf="@id/mainCircle"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="남은 저장공간 : 00.00GB"
+        android:fontFamily="@font/nanumsquareroundb"
+        android:id="@+id/textStorageSpace"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textStorageSpace"
+        android:layout_marginTop="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="남은 저장공간 : 00.00GB"
+        android:fontFamily="@font/nanumsquareroundb"
+        android:id="@+id/textSmt"
+        />
+
 
     <Button
         android:id="@+id/btnCamera"
