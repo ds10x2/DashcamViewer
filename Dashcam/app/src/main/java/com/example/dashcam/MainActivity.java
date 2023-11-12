@@ -1,19 +1,26 @@
 package com.example.dashcam;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.core.app.ActivityCompat;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     private SQLiteHelper sqLiteHelper;
     private SQLiteDatabase db;
+    private GpsChangeReceiver gpsChangeReceiver;
+    private ImageView imageGps;
+    private TextView textGps;
 
 
     @Override
@@ -23,6 +30,14 @@ public class MainActivity extends AppCompatActivity {
 
         sqLiteHelper = SQLiteHelperSingleton.getInstance(this);
         db = sqLiteHelper.getWritableDatabase();
+
+        gpsChangeReceiver = new GpsChangeReceiver(this);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.location.PROVIDERS_CHANGED");
+        registerReceiver(gpsChangeReceiver, intentFilter);
+        imageGps = (ImageView) findViewById(R.id.imageGps);
+        textGps = (TextView) findViewById(R.id.textGPSonoff);
 
         //지도
         Button btn2 = (Button) findViewById(R.id.btn2);
@@ -62,4 +77,16 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         db.close();
     }
+
+    public void updateGpsStatusIcon(boolean isGpsEnabled){
+        if(isGpsEnabled){
+            imageGps.setImageResource(R.drawable.baseline_location_on_24);
+            textGps.setText("위치 ON");
+        }
+        else{
+            imageGps.setImageResource(R.drawable.baseline_location_off_24);
+            textGps.setText("위치 OFF");
+        }
+    }
+
 }
