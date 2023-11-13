@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -47,6 +48,7 @@ public class MapActivity extends AppCompatActivity
 
     private ActivityMapBinding viewBinding;
     private Polyline prevClickedPolyline;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,9 +138,22 @@ public class MapActivity extends AppCompatActivity
         if(FileExistsChecker.isFileExisit(path)){
             viewBinding.textPreview.setVisibility(View.GONE);
             viewBinding.layoutPreview.setVisibility(View.VISIBLE);
+
+            viewBinding.btnFavorite.setVisibility(View.VISIBLE);
+            if(sqLiteHelper.isFileExists(polyline.getTag().toString())){
+                viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
+                viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
+                viewBinding.btnFavorite.setTextColor(Color.rgb(255, 255, 255));
+            }else{
+                viewBinding.btnFavorite.setText("즐겨찾기에 추가");
+            }
+            manageFav(polyline.getTag().toString());
+
+
             viewBinding.videoPreview.setVideoPath(path);
             videoViewSetting();
             viewBinding.textPreviewTitle.setText(polyline.getTag().toString());
+
 
         }else{
             viewBinding.textPreview.setText("동영상이 존재하지 않습니다.");
@@ -147,6 +162,7 @@ public class MapActivity extends AppCompatActivity
     }
 
     public void videoViewSetting(){
+
         viewBinding.videoPreview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
@@ -172,5 +188,26 @@ public class MapActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    public void manageFav(String fileName){
+
+        viewBinding.btnFavorite.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(sqLiteHelper.isFileExists(fileName)){
+                    //즐겨찾기에서 삭제
+                    sqLiteHelper.deleteFavorite(fileName);
+                    viewBinding.btnFavorite.setText("즐겨찾기에 추가");
+                }else{
+                    //즐겨찾기 등록
+                    sqLiteHelper.insertFavorite(fileName);
+                    viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
+                    viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
+                    viewBinding.btnFavorite.setTextColor(Color.rgb(255, 255, 255));
+                }
+            }
+        });
+
     }
 }

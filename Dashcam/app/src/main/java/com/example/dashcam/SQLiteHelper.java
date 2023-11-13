@@ -36,6 +36,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         //주행 시작 시각, 도착 시각
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Driving");
         sqLiteDatabase.execSQL("create table Driving (mID integer primary key autoincrement, Start text, Arrive text);");
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Favorite");
+        sqLiteDatabase.execSQL("create table Favorite (mID integer primary key autoincrement, Filename text)");
 
         //위치 기록 테이블
         //위도, 경도 저장
@@ -149,6 +151,39 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
 
     }
+
+    public boolean isFileExists(String fileName){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT COUNT(*) FROM Favorite WHERE Filename = '" + fileName + "'";
+        Cursor cursor = db.rawQuery(query, null);
+
+        int cnt = 0;
+
+        if(cursor.moveToFirst()){
+            cnt = cursor.getInt(0);
+        }
+        cursor.close();
+        return cnt > 0;
+    }
+
+    public void insertFavorite(String fileName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("Filename", fileName);
+
+        long result = db.insert("Favorite", null, cv);
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteFavorite(String fileName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM Favorite WHERE Filename = '" + fileName + "'";
+        db.execSQL(query);
+    }
+
 
     public void dropTable(String tableName){
         SQLiteDatabase db = this.getWritableDatabase();

@@ -138,6 +138,17 @@
                     android:textColor="#fff"
                     android:background="#666A73"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/btnFavorite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/pannelFront"
+                android:text="즐겨찾기에 추가"
+                android:fontFamily="@font/nanumsquareroundb"
+                android:textColor="#fff"
+                android:background="@color/main_color"
+                android:visibility="gone"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
