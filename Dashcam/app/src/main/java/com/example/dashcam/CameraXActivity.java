@@ -79,8 +79,8 @@ public class CameraXActivity extends AppCompatActivity {
     SQLiteHelper sqLiteHelper;
     private String startTime = null;
     private String arriveTime;
-    private int cnt = 0;
-    private int cntEntire = 0;
+    private long cnt = 0;
+    private long cntEntire = 0;
 
 
 
@@ -118,6 +118,9 @@ public class CameraXActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         String currentDate = dateFormat.format(date);
         viewBinding.dateTextView.setText(currentDate);
+
+        cntEntire = RECORDING_DURATION / COUNTDOWN_INTERVAL;
+        viewBinding.textRecNow.setText("0/" + cntEntire);
 
         //위치 정보
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -171,6 +174,25 @@ public class CameraXActivity extends AppCompatActivity {
             viewBinding.settingRec.setVisibility(View.GONE);
             viewBinding.textRec.setVisibility(View.VISIBLE);
             viewBinding.textRecCycle.setVisibility(View.VISIBLE);
+
+            cntEntire = RECORDING_DURATION / COUNTDOWN_INTERVAL;
+            viewBinding.textRecNow.setText("0/" + cntEntire);
+
+            timer = new CountDownTimer(RECORDING_DURATION, COUNTDOWN_INTERVAL){ //countDownInterval : 타이머 1번 돌아가는 시간
+                @Override
+                public void onTick(long milliisUntilFinished){
+                    startRecord();
+                }
+                @Override
+                public void onFinish(){
+                    stopRecording(); //설정된 시간이 끝나면 반복을 멈춤
+                    viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
+                    isRecording = false;
+                    sqLiteHelper.insertDriving(startTime, arriveTime);
+                    startTime = null;
+                    cnt = 0;
+                }
+            };
         });
     }
 
@@ -207,6 +229,7 @@ public class CameraXActivity extends AppCompatActivity {
             isRecording = false;
             sqLiteHelper.insertDriving(startTime, arriveTime);
             startTime = null;
+            cnt = 0;
         }
         else{
             viewBinding.btnRecordStart.setImageResource(R.drawable.ic_baseline_stop_circle_24);
@@ -234,6 +257,8 @@ public class CameraXActivity extends AppCompatActivity {
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
         contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/Recording");
 
+        cnt++;
+        viewBinding.textRecNow.setText(cnt + "/" + cntEntire);
 
         if(startTime == null) {
             startTime = fileName;
