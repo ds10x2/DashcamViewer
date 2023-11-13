@@ -24,6 +24,8 @@ import androidx.lifecycle.LifecycleOwner;
 
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaActionSound;
 import android.os.Bundle;
@@ -48,10 +50,12 @@ import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -77,6 +81,7 @@ public class CameraXActivity extends AppCompatActivity {
     private String arriveTime;
     private int cnt = 0;
     private int cntEntire = 0;
+
 
 
     /*
@@ -353,7 +358,10 @@ public class CameraXActivity extends AppCompatActivity {
                     if(location != null){
                         currentLatitude = location.getLatitude();
                         currentLongitude = location.getLongitude();
-                        viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
+
+                        String address = LocationUtils.getInstance().getAddressFromLocation(getApplicationContext(), currentLatitude, currentLongitude);
+                        //viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
+                        viewBinding.locationTextView.setText(address);
                         if(isRecording){
                             sqLiteHelper.insertLocation(startTime, arriveTime, currentLatitude, currentLongitude);
                         }
@@ -371,6 +379,8 @@ public class CameraXActivity extends AppCompatActivity {
         long recCycle = COUNTDOWN_INTERVAL / 1000;
         viewBinding.textRecCycle.setText("녹화 주기 " +recCycle + "초");
     }
+
+
 
 
 }
