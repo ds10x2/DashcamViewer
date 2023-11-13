@@ -1,5 +1,7 @@
 package com.example.dashcam;
 
+import static android.os.Environment.DIRECTORY_MOVIES;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.processing.SurfaceProcessorNode;
 import androidx.core.app.ActivityCompat;
@@ -9,6 +11,7 @@ import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private GpsChangeReceiver gpsChangeReceiver;
     private ImageView imageGps;
     private TextView textGps;
-
+    private TextView textSavePath;
+    private TextView textStorageSpace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(gpsChangeReceiver, intentFilter);
         imageGps = (ImageView) findViewById(R.id.imageGps);
         textGps = (TextView) findViewById(R.id.textGPSonoff);
+        textSavePath = (TextView) findViewById(R.id.textSave);
+        textStorageSpace = (TextView) findViewById(R.id.textStorageSpace);
+
+        refreshing();
 
         boolean isGpsEnabled = gpsChangeReceiver.checkGpsStatus(this);
         updateGpsStatusIcon(isGpsEnabled);
@@ -94,6 +102,21 @@ public class MainActivity extends AppCompatActivity {
             imageGps.setImageResource(R.drawable.baseline_location_off_24);
             textGps.setText("위치 OFF");
         }
+    }
+
+    public void refreshing(){
+        textSavePath.setText("저장 경로 : Movies/Recording");
+
+        String storage = storageInfo();
+        textStorageSpace.setText("저장공간 " + storage + "GB" );
+    }
+
+    private String storageInfo(){
+        String totalSpace = StorageUtils.getExternalStorageTotalSpace();
+        String freeSpace = StorageUtils.getExternalStorageFreeSpace();
+
+        return freeSpace + "/" + totalSpace;
+
     }
 
 }
