@@ -14,7 +14,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView textGps;
     private TextView textSavePath;
     private TextView textStorageSpace;
+    private ImageButton btnRefreshing;
+    private Button btnFileExplorer;
+    private Button btnCamera;
+    private Button btn2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +47,8 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.location.PROVIDERS_CHANGED");
         registerReceiver(gpsChangeReceiver, intentFilter);
-        imageGps = (ImageView) findViewById(R.id.imageGps);
-        textGps = (TextView) findViewById(R.id.textGPSonoff);
-        textSavePath = (TextView) findViewById(R.id.textSave);
-        textStorageSpace = (TextView) findViewById(R.id.textStorageSpace);
+
+        initialView();
 
         refreshing();
 
@@ -51,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         updateGpsStatusIcon(isGpsEnabled);
 
         //지도
-        Button btn2 = (Button) findViewById(R.id.btn2);
         btn2.setOnClickListener(new View.OnClickListener(){
            @Override
            public void onClick(View view){
@@ -61,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //카메라
-        Button btnCamera = (Button) findViewById(R.id.btnCamera);
         btnCamera.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -71,12 +74,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //파일 탐색기
-        Button btnFileExplorer = (Button) findViewById(R.id.btn1);
         btnFileExplorer.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(getApplicationContext(), FileExplorerActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        btnRefreshing.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Animation rotateAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_animation);
+                btnRefreshing.startAnimation(rotateAnimation);
+                refreshing();
             }
         });
 
@@ -93,6 +104,18 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    private void initialView(){
+        imageGps = (ImageView) findViewById(R.id.imageGps);
+        textGps = (TextView) findViewById(R.id.textGPSonoff);
+        textSavePath = (TextView) findViewById(R.id.textSave);
+        textStorageSpace = (TextView) findViewById(R.id.textStorageSpace);
+        btnRefreshing = (ImageButton) findViewById(R.id.btnRefreshing);
+        btnFileExplorer = (Button) findViewById(R.id.btn1);
+        btnCamera = (Button) findViewById(R.id.btnCamera);
+        btn2 = (Button) findViewById(R.id.btn2);
+    }
+
+
     public void updateGpsStatusIcon(boolean isGpsEnabled){
         if(isGpsEnabled){
             imageGps.setImageResource(R.drawable.baseline_location_on_24);
@@ -104,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void refreshing(){
+    private void refreshing(){
         textSavePath.setText("저장 경로 : Movies/Recording");
 
         String storage = storageInfo();
@@ -118,5 +141,6 @@ public class MainActivity extends AppCompatActivity {
         return freeSpace + "/" + totalSpace;
 
     }
+
 
 }
