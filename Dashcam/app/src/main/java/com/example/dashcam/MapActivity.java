@@ -6,6 +6,7 @@ import static android.os.Environment.DIRECTORY_MOVIES;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -45,6 +46,7 @@ public class MapActivity extends AppCompatActivity
     private String tableName;
 
     private ActivityMapBinding viewBinding;
+    private Polyline prevClickedPolyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,19 +110,32 @@ public class MapActivity extends AppCompatActivity
 
     @Override
     public void onPolylineClick(Polyline polyline){
-        /*
-        if((polyline.getPattern() == null) || (!polyline.getPattern().contains(DOT))) {
-            polyline.setPattern(PATTERN_POLYLINE_DOTTED);
-        } else{
+
+        if (prevClickedPolyline != null) {
+            prevClickedPolyline.setColor(Color.BLACK); // 이전에 사용한 기본 색상으로 변경
+        }
+
+        if ((polyline.getPattern() == null) || (!polyline.getPattern().contains(DOT))) {
+            polyline.setColor(Color.RED);
+        } else {
             polyline.setPattern(null);
-        }*/
+        }
+        prevClickedPolyline = polyline;
+
         Toast.makeText(this, polyline.getTag().toString(), Toast.LENGTH_SHORT).show();
-        viewBinding.textPreview.setVisibility(View.GONE);
-        viewBinding.layoutPreview.setVisibility(View.VISIBLE);
         String path = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath() + "/Recording/"
                 + polyline.getTag().toString() + ".mp4";
-        viewBinding.videoPreview.setVideoPath(path);
-        viewBinding.textPreviewTitle.setText(polyline.getTag().toString());
+
+        if(FileExistsChecker.isFileExisit(path)){
+            viewBinding.textPreview.setVisibility(View.GONE);
+            viewBinding.layoutPreview.setVisibility(View.VISIBLE);
+            viewBinding.videoPreview.setVideoPath(path);
+            videoViewSetting();
+            viewBinding.textPreviewTitle.setText(polyline.getTag().toString());
+
+        }else{
+            viewBinding.textPreview.setText("동영상이 존재하지 않습니다.");
+        }
 
     }
 
@@ -136,7 +151,18 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void onCompletion(MediaPlayer mp) {
                 //동영상 재생 완료 후
+                viewBinding.btnPlayPreview.setText("재생하기");
 
+            }
+        });
+
+        viewBinding.btnPlayPreview.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(!viewBinding.videoPreview.isPlaying()){
+                    viewBinding.videoPreview.start();
+                    viewBinding.btnPlayPreview.setText("일시정지");
+                }
             }
         });
     }

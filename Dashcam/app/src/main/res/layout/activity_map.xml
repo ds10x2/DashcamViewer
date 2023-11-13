@@ -114,6 +114,18 @@
                     android:textColor="#000"
                     android:fontFamily="@font/nanumsquareroundr"
                     android:textSize="10dp"/>
+                <Button
+                    android:id="@+id/btnPlayPreview"
+                    android:layout_width="0dp"
+                    app:layout_constraintWidth_percent="0.4"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/videoPreview"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginRight="10dp"
+                    android:text="재생하기"
+                    android:fontFamily="@font/nanumsquareroundb"
+                    android:textColor="#fff"
+                    android:background="#666A73"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
