@@ -75,7 +75,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public List<LatLng> getLatLng(String tableName, String time){
         SQLiteDatabase db = this.getReadableDatabase();
         List<LatLng> latLngList = new ArrayList<>();
-        String query = "SELECT Latitude, Longitude FROM " + tableName + " WHERE Start = " + time;
+        String query = "SELECT Latitude, Longitude FROM " + tableName + " WHERE Start = '" + time + "'";
 
         Cursor cursor = db.rawQuery(query, null);
 

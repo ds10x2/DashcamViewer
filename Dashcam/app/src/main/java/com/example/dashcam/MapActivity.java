@@ -1,16 +1,21 @@
 package com.example.dashcam;
 
 import static android.icu.util.MeasureUnit.DOT;
+import static android.os.Environment.DIRECTORY_MOVIES;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dashcam.databinding.ActivityMapBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,25 +42,31 @@ public class MapActivity extends AppCompatActivity
     private static final List<PatternItem> PATTERN_POLYLINE_DOTTED = Arrays.asList(GAP, DOT);
     SQLiteHelper sqLiteHelper;
 
-    private Button btn;
-
     private String tableName;
+
+    private ActivityMapBinding viewBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        //setContentView(R.layout.activity_map);
+        viewBinding = ActivityMapBinding.inflate(getLayoutInflater());
+        setContentView(viewBinding.getRoot());
+
         sqLiteHelper = SQLiteHelperSingleton.getInstance(this);
 
         Intent intent = getIntent(); //데이터를 전달받을 인텐트
         tableName = intent.getStringExtra("TableName");
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        MediaController controller = new MediaController(getApplicationContext());
+        viewBinding.videoPreview.setMediaController(controller);
+        viewBinding.videoPreview.requestFocus();
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
 
     }
-
-
 
 
 
@@ -103,6 +114,30 @@ public class MapActivity extends AppCompatActivity
         } else{
             polyline.setPattern(null);
         }*/
-        Toast.makeText(this, "Route type" + polyline.getTag().toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, polyline.getTag().toString(), Toast.LENGTH_SHORT).show();
+        viewBinding.textPreview.setVisibility(View.GONE);
+        viewBinding.layoutPreview.setVisibility(View.VISIBLE);
+        String path = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath() + "/Recording/"
+                + polyline.getTag().toString() + ".mp4";
+        viewBinding.videoPreview.setVideoPath(path);
+        viewBinding.textPreviewTitle.setText(polyline.getTag().toString());
+
+    }
+
+    public void videoViewSetting(){
+        viewBinding.videoPreview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                int videoDuration = viewBinding.videoPreview.getDuration();
+            }
+        });
+
+        viewBinding.videoPreview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                //동영상 재생 완료 후
+
+            }
+        });
     }
 }
