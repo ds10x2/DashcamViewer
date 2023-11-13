@@ -55,6 +55,17 @@
                 android:id="@+id/mapView"
                 android:name="com.google.android.gms.maps.SupportMapFragment">
             </androidx.fragment.app.FragmentContainerView>
+            <TextView
+                android:id="@+id/textAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="70dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:text="위치"
+                android:fontFamily="@font/nanumsquareroundeb"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

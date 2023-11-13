@@ -76,7 +76,7 @@ public class MapActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap){
         ArrayList<String> timeList = sqLiteHelper.getTime(tableName);
 
-        LatLng zoomPoint = new LatLng(37.5136944, 126.735084 );
+        //LatLng zoomPoint = new LatLng(37.5136944, 126.735084 );
 
         LatLng lastPoint = null;
 
@@ -101,10 +101,17 @@ public class MapActivity extends AppCompatActivity
             lastPoint = latLngs.get(latLngs.size()-1);
 
         }
+        double zoomLatitude = lastPoint.latitude;
+        double zoomLongitude = lastPoint.longitude;
+
+        LatLng zoomPoint = new LatLng(zoomLatitude, zoomLongitude);
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zoomPoint, 15));
 
         googleMap.setOnPolylineClickListener(this);
+
+        String address = LocationUtils.getInstance().getAddressFromLocation(getApplicationContext(), zoomLatitude, zoomLongitude);
+        viewBinding.textAddress.setText(address);
 
     }
 
