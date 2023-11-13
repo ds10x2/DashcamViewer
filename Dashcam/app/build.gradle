@@ -53,5 +53,5 @@ dependencies {
     implementation "androidx.camera:camera-video:${camerax_version}"
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
-    implementation "androidx.slidingpanelayout:slidingpanelayout:1.2.0"
+    implementation 'com.github.hannesa2:AndroidSlidingUpPanel:3.5.0'
 }
