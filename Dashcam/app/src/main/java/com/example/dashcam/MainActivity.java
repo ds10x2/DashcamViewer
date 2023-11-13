@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MotionEvent;
@@ -21,7 +22,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import org.w3c.dom.Text;
+
+public class MainActivity extends AppCompatActivity
+    implements LocationHelper.LocationListener {
     private SQLiteHelper sqLiteHelper;
     private SQLiteDatabase db;
     private GpsChangeReceiver gpsChangeReceiver;
@@ -33,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnFileExplorer;
     private Button btnCamera;
     private Button btn2;
+    private TextView textNowLocation;
+    private LocationHelper locationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.location.PROVIDERS_CHANGED");
         registerReceiver(gpsChangeReceiver, intentFilter);
+        locationHelper = new LocationHelper(this, this);
+        locationHelper.checkLocationPermission();
 
         initialView();
 
@@ -113,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         btnFileExplorer = (Button) findViewById(R.id.btn1);
         btnCamera = (Button) findViewById(R.id.btnCamera);
         btn2 = (Button) findViewById(R.id.btn2);
+        textNowLocation = (TextView) findViewById(R.id.textNowLocation);
     }
 
 
@@ -124,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         else{
             imageGps.setImageResource(R.drawable.baseline_location_off_24);
             textGps.setText("위치 OFF");
+            textNowLocation.setText("현재 위치 : 위치를 켜주세요");
         }
     }
 
@@ -132,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
 
         String storage = storageInfo();
         textStorageSpace.setText("저장공간 " + storage + "GB" );
+
+        locationHelper.requestSingleUpdate();
+
     }
 
     private String storageInfo(){
@@ -142,5 +155,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onLocationUpdated(String address){
+        textNowLocation.setText("현재 위치 : " + address);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // LocationHelper에게 권한 요청 결과 전달
+        locationHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 
 }
