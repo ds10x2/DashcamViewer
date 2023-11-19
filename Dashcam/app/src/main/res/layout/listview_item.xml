@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#fff">
+
+
+    <TextView
+        android:id="@+id/textDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2000.00.00"
+        android:textColor="@color/black"
+        android:fontFamily="@font/nanumsquareroundb"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        app:layout_constraintWidth_percent="0.9"
+        app:layout_constraintTop_toBottomOf="@id/textDate"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/listview_background_rec"
+        >
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.45"
+            android:background="@drawable/dotted_line_ver"
+            app:layout_constraintRight_toRightOf="@id/circle1"
+            app:layout_constraintLeft_toLeftOf="@id/circle1"
+            app:layout_constraintTop_toTopOf="@id/circle1"
+            app:layout_constraintBottom_toBottomOf="@id/circle2"/>
+
+        <View
+            android:id="@+id/circle1"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.25"
+            app:layout_constraintHorizontal_bias="0.05"
+            android:background="@drawable/oval_style"
+            />
+
+        <View
+            android:id="@+id/circle2"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.75"
+            app:layout_constraintHorizontal_bias="0.05"
+            android:background="@drawable/oval_style2"
+            />
+
+        <TextView
+            android:id="@+id/timeDepart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/circle1"
+            app:layout_constraintTop_toTopOf="@id/circle1"
+            app:layout_constraintBottom_toBottomOf="@id/circle1"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:text="00:00"
+            android:fontFamily="@font/nanumsquareroundb"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/timeArrive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/circle2"
+            app:layout_constraintTop_toTopOf="@id/circle2"
+            app:layout_constraintBottom_toBottomOf="@id/circle2"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="5dp"
+            android:text="00:00"
+            android:fontFamily="@font/nanumsquareroundb"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/addressDepart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/circle1"
+            app:layout_constraintTop_toTopOf="@id/circle1"
+            app:layout_constraintBottom_toBottomOf="@id/circle1"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="5dp"
+            android:text="xx"
+            android:fontFamily="@font/nanumsquareroundb"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/addressArrive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/circle2"
+            app:layout_constraintTop_toTopOf="@id/circle2"
+            app:layout_constraintBottom_toBottomOf="@id/circle2"
+            android:layout_marginLeft="70dp"
+            android:layout_marginBottom="5dp"
+            android:text="xx"
+            android:fontFamily="@font/nanumsquareroundb"
+            android:textColor="@color/black"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

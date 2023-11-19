@@ -1,4 +1,4 @@
-package com.example.dashcam;
+package com.example.dashcam.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,7 +9,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.dashcam.databinding.ActivityCameraxBinding;
+import com.example.dashcam.SQLiteHelper;
+import com.example.dashcam.SQLiteHelperSingleton;
+import com.example.dashcam.activity.MapActivity;
+import com.example.dashcam.adapter.ListItem;
+import com.example.dashcam.adapter.ListItemAdapter;
 import com.example.dashcam.databinding.ActivityRoutelistBinding;
 
 import java.util.ArrayList;
@@ -22,7 +26,7 @@ public class RoutelistActivity extends AppCompatActivity {
     private ArrayAdapter mAdapter;
     private ArrayList arRoutes;
 
-
+    private ListItemAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +35,26 @@ public class RoutelistActivity extends AppCompatActivity {
         setContentView(viewBinding.getRoot());
         sqLiteHelper = SQLiteHelperSingleton.getInstance(this);
 
-        arRoutes = sqLiteHelper.getDriving();
-        mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arRoutes);
-        viewBinding.routeList.setAdapter(mAdapter);
+        //arRoutes = sqLiteHelper.getDriving();
+        //mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arRoutes);
+        //viewBinding.routeList.setAdapter(mAdapter);
+        //viewBinding.routeList.setOnItemClickListener(mItemClickListener);
+
+        adapter = new ListItemAdapter();
+
+        ArrayList<ListItem> routes = sqLiteHelper.getroute(this);
+        adapter.addItem(routes);
+        viewBinding.routeList.setAdapter(adapter);
         viewBinding.routeList.setOnItemClickListener(mItemClickListener);
 
 
+
     }
+
+    private void setItem(){
+
+    }
+
 
     AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener(){
         @Override

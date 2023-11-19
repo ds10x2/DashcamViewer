@@ -1,4 +1,4 @@
-package com.example.dashcam;
+package com.example.dashcam.activity;
 
 import static android.icu.util.MeasureUnit.DOT;
 import static android.os.Environment.DIRECTORY_MOVIES;
@@ -17,6 +17,11 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dashcam.FileExistsChecker;
+import com.example.dashcam.LocationUtils;
+import com.example.dashcam.R;
+import com.example.dashcam.SQLiteHelper;
+import com.example.dashcam.SQLiteHelperSingleton;
 import com.example.dashcam.databinding.ActivityMapBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

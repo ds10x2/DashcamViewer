@@ -1,19 +1,11 @@
-package com.example.dashcam;
-
-import static android.os.Environment.DIRECTORY_MOVIES;
+package com.example.dashcam.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.processing.SurfaceProcessorNode;
-import androidx.core.app.ActivityCompat;
 
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Environment;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,7 +14,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.example.dashcam.GpsChangeReceiver;
+import com.example.dashcam.LocationHelper;
+import com.example.dashcam.R;
+import com.example.dashcam.SQLiteHelper;
+import com.example.dashcam.SQLiteHelperSingleton;
+import com.example.dashcam.StorageUtils;
 
 public class MainActivity extends AppCompatActivity
     implements LocationHelper.LocationListener {

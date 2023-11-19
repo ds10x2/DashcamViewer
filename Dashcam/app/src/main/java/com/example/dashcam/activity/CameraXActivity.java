@@ -1,4 +1,4 @@
-package com.example.dashcam;
+package com.example.dashcam.activity;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -38,6 +38,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
+import com.example.dashcam.LocationUtils;
+import com.example.dashcam.R;
+import com.example.dashcam.SQLiteHelper;
+import com.example.dashcam.SQLiteHelperSingleton;
 import com.example.dashcam.databinding.ActivityCameraxBinding;
 import com.example.dashcam.databinding.ActivityMainBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;

@@ -1,4 +1,4 @@
-package com.example.dashcam;
+package com.example.dashcam.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +11,7 @@ import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.example.dashcam.R;
 import com.example.dashcam.databinding.ActivityCameraxBinding;
 import com.example.dashcam.databinding.ActivityVideoplayerBinding;
 

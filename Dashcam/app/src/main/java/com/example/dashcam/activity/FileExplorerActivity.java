@@ -1,4 +1,4 @@
-package com.example.dashcam;
+package com.example.dashcam.activity;
 
 import static android.os.Environment.DIRECTORY_MOVIES;
 
@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -24,6 +23,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.dashcam.R;
 
 import java.io.File;
 import java.util.ArrayList;

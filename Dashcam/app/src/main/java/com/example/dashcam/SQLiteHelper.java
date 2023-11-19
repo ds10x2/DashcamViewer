@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.dashcam.adapter.ListItem;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.lang.reflect.Array;
@@ -59,6 +60,62 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         while(cursor.moveToNext()){
             result.add(cursor.getString(0));
         }
+        cursor.close();
+        return result;
+    }
+
+    public ArrayList<ListItem> getroute(Context context){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT Start, Arrive FROM Driving", null);
+        ArrayList<ListItem> result = new ArrayList<>();
+
+        int startIndex = cursor.getColumnIndex("Start");
+        int arriveIndex = cursor.getColumnIndex("Arrive");
+
+        while(cursor.moveToNext()){
+            String start = cursor.getString(startIndex);
+            String arrive = cursor.getString(arriveIndex);
+
+            String date = start.substring(0, 4) + "." + start.substring(4, 6) + "." + start.substring(6, 8);
+            String timeDepart = start.substring(9, 11) + ":" + start.substring(11, 13);
+            String timeArrive = arrive.substring(9, 11) + ":" + arrive.substring(11, 13);
+            String addressDepart = null;
+            String addressArrive = null;
+
+            Cursor cursor2 = db.rawQuery("SELECT Latitude, Longitude FROM t" + start + " LIMIT 1", null);
+
+            int latitudeIndex = cursor2.getColumnIndex("Latitude");
+            int longitudeIndex = cursor2.getColumnIndex("Longitude");
+
+            while (cursor2.moveToNext()){
+                double latitude = cursor2.getDouble(latitudeIndex);
+                double longitude = cursor2.getDouble(longitudeIndex);
+
+                addressDepart = LocationUtils.getInstance().getAddressFromLocation(context, latitude, longitude);
+            }
+
+            cursor2.close();
+
+            String query = "SELECT Latitude, Longitude FROM t" + start + " WHERE mID = (SELECT max(mID) FROM t" + start + ")";
+
+            Cursor cursor3 = db.rawQuery(query, null);
+
+            latitudeIndex = cursor3.getColumnIndex("Latitude");
+            longitudeIndex = cursor3.getColumnIndex("Longitude");
+
+            while (cursor3.moveToNext()){
+                double latitude = cursor3.getDouble(latitudeIndex);
+                double longitude = cursor3.getDouble(longitudeIndex);
+
+                addressArrive = LocationUtils.getInstance().getAddressFromLocation(context, latitude, longitude);
+            }
+
+            cursor3.close();
+
+            ListItem listItem = new ListItem(date, addressDepart, addressArrive, timeDepart, timeArrive);
+            result.add(listItem);
+        }
+
         cursor.close();
         return result;
     }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 
+import com.example.dashcam.activity.MainActivity;
+
 public class GpsChangeReceiver extends android.content.BroadcastReceiver{
     private MainActivity mainActivity;
     public GpsChangeReceiver(MainActivity mainActivity){

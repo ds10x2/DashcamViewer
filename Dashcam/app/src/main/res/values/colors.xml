@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="main_color">#7C86DE</color>
     <color name="main_background">#FCFCFC</color>
+    <color name="listview_background">#F8F8F8</color>
 </resources>
