@@ -64,6 +64,7 @@ public class MapActivity extends AppCompatActivity
     private Handler handler = new Handler();
     private MediaController controller;
     private boolean isUserSeeking = false;
+    private String videoTitle = null;
 
 
     @Override
@@ -78,6 +79,10 @@ public class MapActivity extends AppCompatActivity
         Intent intent = getIntent(); //데이터를 전달받을 인텐트
         tableName = intent.getStringExtra("TableName");
 
+        if(intent.hasExtra("VideoTitle")){
+            videoTitle = intent.getStringExtra("VideoTitle");
+        }
+
         controller = new MediaController(getApplicationContext());
         viewBinding.videoPreview.setMediaController(controller);
         viewBinding.videoPreview.requestFocus();
@@ -91,17 +96,17 @@ public class MapActivity extends AppCompatActivity
 
 
 
-    public void onMapReady(GoogleMap googleMap){
+    public void onMapReady(GoogleMap googleMap) {
         ArrayList<String> timeList = sqLiteHelper.getTime(tableName);
 
         //LatLng zoomPoint = new LatLng(37.5136944, 126.735084 );
 
         LatLng lastPoint = null;
 
-        for(String start : timeList){
+        for (String start : timeList) {
             List<LatLng> latLngs = sqLiteHelper.getLatLng(tableName, start);
 
-            if(lastPoint != null){
+            if (lastPoint != null) {
                 latLngs.add(0, lastPoint);
             }
 
@@ -112,7 +117,7 @@ public class MapActivity extends AppCompatActivity
 
             polyline1.setTag(start);
 
-            lastPoint = latLngs.get(latLngs.size()-1);
+            lastPoint = latLngs.get(latLngs.size() - 1);
 
         }
         double zoomLatitude = lastPoint.latitude;
@@ -127,6 +132,45 @@ public class MapActivity extends AppCompatActivity
         String address = LocationUtils.getInstance().getAddressFromLocation(getApplicationContext(), zoomLatitude, zoomLongitude);
         viewBinding.textAddress.setText(address);
 
+
+
+        if (videoTitle != null) {
+
+            String path = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath() + "/Recording/" + videoTitle + ".mp4";
+
+            if (FileExistsChecker.isFileExisit(path)) {
+                viewBinding.textPreview.setVisibility(View.GONE);
+                viewBinding.layoutPreview.setVisibility(View.VISIBLE);
+
+                viewBinding.btnFavorite.setVisibility(View.VISIBLE);
+                if (sqLiteHelper.isFileExists(videoTitle)) {
+                    viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
+                    viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
+                } else {
+                    viewBinding.btnFavorite.setText("즐겨찾기에 추가");
+                    viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
+                }
+                manageFav(videoTitle, tableName);
+
+                viewBinding.btnShare.setVisibility(View.VISIBLE);
+                viewBinding.btnShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.setType("video/*");
+                        Uri videoUri = FileProvider.getUriForFile(MapActivity.this, getApplicationContext().getPackageName() + ".fileprovider", new File(path));
+
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
+                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(Intent.createChooser(shareIntent, "비디오 공유하기"));
+                    }
+                });
+                viewBinding.videoPreview.setVideoPath(path);
+                videoViewSetting();
+                viewBinding.textPreviewTitle.setText(videoTitle);
+            }
+
+        }
     }
 
     @Override

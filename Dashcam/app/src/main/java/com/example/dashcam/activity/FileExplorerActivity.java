@@ -150,9 +150,11 @@ public class FileExplorerActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id){
             ListItemFav clickedItem = fileListFav.get(position);
             String tableName = clickedItem.getTableName();
+            String videoTitle = clickedItem.getVideoTitle();
 
             Intent intent = new Intent(getApplicationContext(), MapActivity.class);
             intent.putExtra("TableName", tableName);
+            intent.putExtra("VideoTitle", videoTitle);
             startActivity(intent);
         }
     };
@@ -182,10 +184,20 @@ public class FileExplorerActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), extension, 0).show();
 
                 if(extension.equals("mp4")){
+                    int len = Name.length();
 
-                    Intent intent = new Intent(getApplicationContext(), VideoplayerActivity.class);
-                    intent.putExtra("Path", Path); //파일 경로 전달
+                    String videoTitle = Name.substring(0,len - 4);
+                    String tableName = sqLiteHelper.getTableNamewitheTitle(videoTitle);
+                    Toast.makeText(getApplicationContext(), videoTitle, 0).show();
+
+                    Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+                    intent.putExtra("TableName", "t"+tableName);
+                    intent.putExtra("VideoTitle", videoTitle);
                     startActivity(intent);
+
+                    //Intent intent = new Intent(getApplicationContext(), VideoplayerActivity.class);
+                    //intent.putExtra("Path", Path); //파일 경로 전달
+                    //startActivity(intent);
 
                 }else{
                     Toast.makeText(getApplicationContext(), (String) arFiles.get(position), 0).show();

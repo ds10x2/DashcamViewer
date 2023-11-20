@@ -121,6 +121,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public String getTableNamewitheTitle(String videoTitle){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String result = null;
+        Cursor cursor = db.rawQuery("SELECT Start FROM Driving", null);
+        while(cursor.moveToNext()){
+            if (videoTitle.compareTo(cursor.getString(0)) >= 0) {
+                if(result == null || cursor.getString(0).compareTo(result) > 0)
+                    result = cursor.getString(0);
+            }
+        }
+        cursor.close();
+
+        return result;
+    }
+
     public String getTableName(int id){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT Start FROM Driving Where mID = " + id, null);
