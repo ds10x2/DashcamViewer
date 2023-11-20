@@ -137,6 +137,12 @@ public class CameraXActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause(){
+        super.onPause();
+        stopRecording();
+    }
+
     private void settingRecCycle(){
         viewBinding.settingRec.setVisibility(View.VISIBLE);
         viewBinding.textRec.setVisibility(View.INVISIBLE);
