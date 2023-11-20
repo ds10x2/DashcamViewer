@@ -16,6 +16,7 @@ import com.example.dashcam.adapter.ListItem;
 import com.example.dashcam.adapter.ListItemAdapter;
 import com.example.dashcam.databinding.ActivityRoutelistBinding;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class RoutelistActivity extends AppCompatActivity {
@@ -26,6 +27,7 @@ public class RoutelistActivity extends AppCompatActivity {
     private ArrayAdapter mAdapter;
     private ArrayList arRoutes;
 
+    private ArrayList<ListItem> routes;
     private ListItemAdapter adapter;
 
     @Override
@@ -42,7 +44,7 @@ public class RoutelistActivity extends AppCompatActivity {
 
         adapter = new ListItemAdapter();
 
-        ArrayList<ListItem> routes = sqLiteHelper.getroute(this);
+        routes = sqLiteHelper.getroute(this);
         adapter.addItem(routes);
         viewBinding.routeList.setAdapter(adapter);
         viewBinding.routeList.setOnItemClickListener(mItemClickListener);
@@ -51,20 +53,16 @@ public class RoutelistActivity extends AppCompatActivity {
 
     }
 
-    private void setItem(){
-
-    }
 
 
     AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener(){
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id){
 
-            String strID = (String) arRoutes.get(position);
+            ListItem clickedItem = routes.get(position);
 
-            int ID = Integer.parseInt(strID);
+            tableName = clickedItem.getTableName();
 
-            tableName = sqLiteHelper.getTableName(ID);
 
             Intent intent = new Intent(getApplicationContext(), MapActivity.class);
             intent.putExtra("TableName", tableName);

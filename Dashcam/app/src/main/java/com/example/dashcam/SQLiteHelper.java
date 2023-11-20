@@ -112,7 +112,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
             cursor3.close();
 
-            ListItem listItem = new ListItem(date, addressDepart, addressArrive, timeDepart, timeArrive);
+            ListItem listItem = new ListItem(date, addressDepart, addressArrive, timeDepart, timeArrive, "t" + start);
             result.add(listItem);
         }
 

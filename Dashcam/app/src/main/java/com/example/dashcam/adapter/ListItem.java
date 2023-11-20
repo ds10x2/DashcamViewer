@@ -7,6 +7,10 @@ public class ListItem {
     private String timeDepart;
     private String timeArrive;
     //private String distance;
+    private String tableName;
+
+    public String getTableName(){return tableName;}
+    public void setTableName(String tableName) {this.tableName = tableName;}
 
     public String getDate() {
         return date;
@@ -50,11 +54,12 @@ public class ListItem {
 
 
 
-    public ListItem(String date, String addressDepart, String addressArrive, String timeDepart, String timeArrive){
+    public ListItem(String date, String addressDepart, String addressArrive, String timeDepart, String timeArrive, String tableName){
         this.date = date;
         this.addressDepart = addressDepart;
         this.addressArrive = addressArrive;
         this.timeArrive = timeArrive;
         this.timeDepart = timeDepart;
+        this.tableName = tableName;
     }
 }
