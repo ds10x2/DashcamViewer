@@ -65,6 +65,7 @@ public class MapActivity extends AppCompatActivity
     private MediaController controller;
     private boolean isUserSeeking = false;
     private String videoTitle = null;
+    private String address = null;
 
 
     @Override
@@ -129,7 +130,7 @@ public class MapActivity extends AppCompatActivity
 
         googleMap.setOnPolylineClickListener(this);
 
-        String address = LocationUtils.getInstance().getAddressFromLocation(getApplicationContext(), zoomLatitude, zoomLongitude);
+        address = LocationUtils.getInstance().getAddressFromLocation(getApplicationContext(), zoomLatitude, zoomLongitude);
         viewBinding.textAddress.setText(address);
 
 
@@ -138,38 +139,51 @@ public class MapActivity extends AppCompatActivity
 
             String path = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath() + "/Recording/" + videoTitle + ".mp4";
 
-            if (FileExistsChecker.isFileExisit(path)) {
-                viewBinding.textPreview.setVisibility(View.GONE);
-                viewBinding.layoutPreview.setVisibility(View.VISIBLE);
+            settingVideoView(path, videoTitle);
 
-                viewBinding.btnFavorite.setVisibility(View.VISIBLE);
-                if (sqLiteHelper.isFileExists(videoTitle)) {
-                    viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
-                    viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
-                } else {
-                    viewBinding.btnFavorite.setText("즐겨찾기에 추가");
-                    viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
-                }
-                manageFav(videoTitle, tableName);
+        }
+    }
 
-                viewBinding.btnShare.setVisibility(View.VISIBLE);
-                viewBinding.btnShare.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                        shareIntent.setType("video/*");
-                        Uri videoUri = FileProvider.getUriForFile(MapActivity.this, getApplicationContext().getPackageName() + ".fileprovider", new File(path));
+    public void settingVideoView(String path, String videoTitle){
+        if (FileExistsChecker.isFileExisit(path)) {
+            viewBinding.textPreview.setVisibility(View.GONE);
+            viewBinding.layoutPreview.setVisibility(View.VISIBLE);
 
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
-                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivity(Intent.createChooser(shareIntent, "비디오 공유하기"));
-                    }
-                });
-                viewBinding.videoPreview.setVideoPath(path);
-                videoViewSetting();
-                viewBinding.textPreviewTitle.setText(videoTitle);
+            String date = videoTitle.substring(0, 4) + "년 " + videoTitle.substring(4, 6) + "월 " + videoTitle.substring(6, 8) + "일"
+                    + videoTitle.substring(8, 10) + "시 " + videoTitle.substring(10, 12) + "분";
+            viewBinding.textDate.setText(date);
+
+            viewBinding.textLocation.setText(address);
+
+            viewBinding.btnFavorite.setVisibility(View.VISIBLE);
+            if (sqLiteHelper.isFileExists(videoTitle)) {
+                viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
+                viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
+            } else {
+                viewBinding.btnFavorite.setText("즐겨찾기에 추가");
+                viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
             }
+            manageFav(videoTitle, tableName);
 
+            viewBinding.btnShare.setVisibility(View.VISIBLE);
+            viewBinding.btnShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("video/*");
+                    Uri videoUri = FileProvider.getUriForFile(MapActivity.this, getApplicationContext().getPackageName() + ".fileprovider", new File(path));
+
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(shareIntent, "비디오 공유하기"));
+                }
+            });
+            viewBinding.videoPreview.setVideoPath(path);
+            videoViewSetting();
+            viewBinding.textPreviewTitle.setText(videoTitle);
+        }
+        else{
+            viewBinding.textPreview.setText("동영상이 존재하지 않습니다.");
         }
     }
 
@@ -191,45 +205,7 @@ public class MapActivity extends AppCompatActivity
         String path = Environment.getExternalStoragePublicDirectory(DIRECTORY_MOVIES).getAbsolutePath() + "/Recording/"
                 + polyline.getTag().toString() + ".mp4";
 
-        if(FileExistsChecker.isFileExisit(path)){
-            viewBinding.textPreview.setVisibility(View.GONE);
-            viewBinding.layoutPreview.setVisibility(View.VISIBLE);
-
-            viewBinding.btnFavorite.setVisibility(View.VISIBLE);
-            if(sqLiteHelper.isFileExists(polyline.getTag().toString())){
-                viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
-                viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
-            }else{
-                viewBinding.btnFavorite.setText("즐겨찾기에 추가");
-                viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
-            }
-            manageFav(polyline.getTag().toString(), tableName);
-
-            viewBinding.btnShare.setVisibility(View.VISIBLE);
-            viewBinding.btnShare.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view){
-                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                    shareIntent.setType("video/*");
-                    Uri videoUri = FileProvider.getUriForFile(MapActivity.this, getApplicationContext().getPackageName() + ".fileprovider", new File(path));
-
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
-                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(Intent.createChooser(shareIntent, "비디오 공유하기"));
-                }
-            });
-
-
-            viewBinding.videoPreview.setVideoPath(path);
-            videoViewSetting();
-            viewBinding.textPreviewTitle.setText(polyline.getTag().toString());
-
-
-
-
-        }else{
-            viewBinding.textPreview.setText("동영상이 존재하지 않습니다.");
-        }
+        settingVideoView(path, polyline.getTag().toString());
 
     }
 
@@ -294,11 +270,13 @@ public class MapActivity extends AppCompatActivity
             public void onClick(View v){
                 if(sqLiteHelper.isFileExists(fileName)){
                     //즐겨찾기에서 삭제
+                    Toast.makeText(getApplicationContext(), "즐겨찾기에서 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                     sqLiteHelper.deleteFavorite(fileName);
                     viewBinding.btnFavorite.setText("즐겨찾기에 추가");
                     viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
                 }else{
                     //즐겨찾기 등록
+                    Toast.makeText(getApplicationContext(), "즐겨찾기에 추가되었습니다.", Toast.LENGTH_SHORT).show();
                     sqLiteHelper.insertFavorite(fileName, tableName);
                     viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
                     viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));

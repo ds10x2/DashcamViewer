@@ -135,10 +135,35 @@
                     app:layout_constraintTop_toBottomOf="@+id/seekBar"
                     app:layout_constraintLeft_toLeftOf="parent"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
                     android:text="파일명"
                     android:textColor="#000"
                     android:fontFamily="@font/nanumsquareroundr"
-                    android:textSize="10dp"/>
+                    android:textSize="13dp"/>
+                <TextView
+                    android:id="@+id/textDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/textPreviewTitle"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:text="날짜"
+                    android:textColor="#000"
+                    android:fontFamily="@font/nanumsquareroundr"
+                    android:textSize="11dp"/>
+                <TextView
+                    android:id="@+id/textLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/textDate"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"
+                    android:text="위치 정보"
+                    android:textColor="#000"
+                    android:fontFamily="@font/nanumsquareroundr"
+                    android:textSize="11dp"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
             <Button
                 android:id="@+id/btnFavorite"
