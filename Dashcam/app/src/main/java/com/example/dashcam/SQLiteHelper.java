@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.example.dashcam.adapter.ListItem;
+import com.example.dashcam.adapter.ListItemFav;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.lang.reflect.Array;
@@ -38,7 +39,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Driving");
         sqLiteDatabase.execSQL("create table Driving (mID integer primary key autoincrement, Start text, Arrive text);");
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Favorite");
-        sqLiteDatabase.execSQL("create table Favorite (mID integer primary key autoincrement, Filename text)");
+        sqLiteDatabase.execSQL("create table Favorite (mID integer primary key autoincrement, Filename text, Tablename text)");
 
         //위치 기록 테이블
         //위도, 경도 저장
@@ -224,7 +225,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return cnt > 0;
     }
 
-    public void insertFavorite(String fileName){
+    public void insertFavorite(String fileName, String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("Filename", fileName);
@@ -239,6 +240,27 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM Favorite WHERE Filename = '" + fileName + "'";
         db.execSQL(query);
+    }
+
+    public ArrayList<ListItemFav> getFavorite(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<ListItemFav> result = new ArrayList<>();
+
+        String query = "SELECT Filename, Tablename FROM FAVORITE";
+        Cursor cursor = db.rawQuery(query, null);
+
+        int fileNameIndex = cursor.getColumnIndex("Filename");
+        int tablenameIndex = cursor.getColumnIndex("Tablename");
+        while(cursor.moveToNext()){
+            String filename = cursor.getString(fileNameIndex);
+            String tablename = cursor.getString(tablenameIndex);
+
+            ListItemFav listitem = new ListItemFav(filename, tablename);
+            result.add(listitem);
+        }
+        cursor.close();
+        return result;
+
     }
 
 

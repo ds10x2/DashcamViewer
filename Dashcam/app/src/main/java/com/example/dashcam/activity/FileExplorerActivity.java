@@ -25,6 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dashcam.R;
+import com.example.dashcam.SQLiteHelper;
+import com.example.dashcam.SQLiteHelperSingleton;
+import com.example.dashcam.adapter.ListItemFav;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,6 +45,11 @@ public class FileExplorerActivity extends AppCompatActivity {
     Button mFavorite;
     Button mEvery;
 
+    ArrayList<ListItemFav> fileListFav;
+    ArrayAdapter adapterFav;
+    SQLiteHelper sqLiteHelper;
+
+
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static String[] permission = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -52,6 +60,8 @@ public class FileExplorerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_explorer);
+
+        sqLiteHelper = SQLiteHelperSingleton.getInstance(this);
 
         mCurrentTxt = (TextView) findViewById(R.id.current);
         mFileList = (ListView) findViewById(R.id.filelist);
@@ -69,6 +79,9 @@ public class FileExplorerActivity extends AppCompatActivity {
         mAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arFiles);
         mFileList.setAdapter(mAdapter); // 리스트 뷰에 어댑터 연결
         mFileList.setOnItemClickListener(mItemClickListener);
+
+        fileListFav = sqLiteHelper.getFavorite();
+        adapterFav = new ArrayAdapter(this, android.R.layout.simple_list_item_1, fileListFav);
 
 
         allPermissionsGranted();
@@ -95,6 +108,9 @@ public class FileExplorerActivity extends AppCompatActivity {
 
                     mEvery.setBackgroundColor(Color.rgb(252, 252, 252));
                     mEvery.setTextColor(Color.rgb(0, 0, 0));
+
+                    mFileList.setAdapter(adapterFav); // 리스트 뷰에 어댑터 연결
+                    mFileList.setOnItemClickListener(mItemClickListener);
                 }
                 else{
                     mFavorite.setBackgroundColor(Color.rgb(252,252,252));
@@ -115,6 +131,9 @@ public class FileExplorerActivity extends AppCompatActivity {
 
                     mFavorite.setBackgroundColor(Color.rgb(252, 252, 252));
                     mFavorite.setTextColor(Color.rgb(0, 0, 0));
+
+                    mFileList.setAdapter(mAdapter); // 리스트 뷰에 어댑터 연결
+                    mFileList.setOnItemClickListener(mItemClickListener);
                 }
                 else{
                     mEvery.setBackgroundColor(Color.rgb(252,252,252));
@@ -124,6 +143,18 @@ public class FileExplorerActivity extends AppCompatActivity {
         });
 
     }
+
+    AdapterView.OnItemClickListener favItemClickListener = new AdapterView.OnItemClickListener(){
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+            ListItemFav clickedItem = fileListFav.get(position);
+            String tableName = clickedItem.getTableName();
+
+            Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+            intent.putExtra("TableName", tableName);
+            startActivity(intent);
+        }
+    };
 
 
     AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {

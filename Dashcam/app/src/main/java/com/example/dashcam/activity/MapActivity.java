@@ -152,7 +152,7 @@ public class MapActivity extends AppCompatActivity
                 viewBinding.btnFavorite.setText("즐겨찾기에 추가");
                 viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
             }
-            manageFav(polyline.getTag().toString());
+            manageFav(polyline.getTag().toString(), tableName);
 
 
             viewBinding.videoPreview.setVideoPath(path);
@@ -195,7 +195,7 @@ public class MapActivity extends AppCompatActivity
         });
     }
 
-    public void manageFav(String fileName){
+    public void manageFav(String fileName, String tableName){
 
         viewBinding.btnFavorite.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -207,7 +207,7 @@ public class MapActivity extends AppCompatActivity
                     viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
                 }else{
                     //즐겨찾기 등록
-                    sqLiteHelper.insertFavorite(fileName);
+                    sqLiteHelper.insertFavorite(fileName, tableName);
                     viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
                     viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
                 }
