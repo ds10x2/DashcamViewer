@@ -148,9 +148,9 @@ public class MapActivity extends AppCompatActivity
             if(sqLiteHelper.isFileExists(polyline.getTag().toString())){
                 viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
                 viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
-                viewBinding.btnFavorite.setTextColor(Color.rgb(255, 255, 255));
             }else{
                 viewBinding.btnFavorite.setText("즐겨찾기에 추가");
+                viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
             }
             manageFav(polyline.getTag().toString());
 
@@ -204,12 +204,12 @@ public class MapActivity extends AppCompatActivity
                     //즐겨찾기에서 삭제
                     sqLiteHelper.deleteFavorite(fileName);
                     viewBinding.btnFavorite.setText("즐겨찾기에 추가");
+                    viewBinding.btnFavorite.setBackgroundColor(Color.rgb(124, 134, 222));
                 }else{
                     //즐겨찾기 등록
                     sqLiteHelper.insertFavorite(fileName);
                     viewBinding.btnFavorite.setText("즐겨찾기에서 삭제");
                     viewBinding.btnFavorite.setBackgroundColor(Color.rgb(102, 106, 115));
-                    viewBinding.btnFavorite.setTextColor(Color.rgb(255, 255, 255));
                 }
             }
         });
