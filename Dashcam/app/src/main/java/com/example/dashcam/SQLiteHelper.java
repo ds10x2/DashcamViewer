@@ -77,8 +77,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             String arrive = cursor.getString(arriveIndex);
 
             String date = start.substring(0, 4) + "." + start.substring(4, 6) + "." + start.substring(6, 8);
-            String timeDepart = start.substring(9, 11) + ":" + start.substring(11, 13);
-            String timeArrive = arrive.substring(9, 11) + ":" + arrive.substring(11, 13);
+            String timeDepart = start.substring(8, 10) + ":" + start.substring(10, 12);
+            String timeArrive = arrive.substring(8, 10) + ":" + arrive.substring(10, 12);
             String addressDepart = null;
             String addressArrive = null;
 

@@ -43,7 +43,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/top"
-        android:id="@+id/routeList"/>
+        android:id="@+id/routeList"
+        android:paddingBottom="100dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
