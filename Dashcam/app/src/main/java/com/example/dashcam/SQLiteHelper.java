@@ -229,6 +229,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("Filename", fileName);
+        cv.put("Tablename", tableName);
 
         long result = db.insert("Favorite", null, cv);
         if(result == -1){

@@ -4,16 +4,22 @@ import static android.icu.util.MeasureUnit.DOT;
 import static android.os.Environment.DIRECTORY_MOVIES;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.processing.SurfaceProcessorNode;
+import androidx.core.content.FileProvider;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorSpace;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.MediaController;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +41,7 @@ import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +60,10 @@ public class MapActivity extends AppCompatActivity
 
     private ActivityMapBinding viewBinding;
     private Polyline prevClickedPolyline;
+    private boolean isVideoPlaying = false;
+    private Handler handler = new Handler();
+    private MediaController controller;
+    private boolean isUserSeeking = false;
 
 
     @Override
@@ -67,7 +78,7 @@ public class MapActivity extends AppCompatActivity
         Intent intent = getIntent(); //데이터를 전달받을 인텐트
         tableName = intent.getStringExtra("TableName");
 
-        MediaController controller = new MediaController(getApplicationContext());
+        controller = new MediaController(getApplicationContext());
         viewBinding.videoPreview.setMediaController(controller);
         viewBinding.videoPreview.requestFocus();
 
@@ -94,10 +105,6 @@ public class MapActivity extends AppCompatActivity
                 latLngs.add(0, lastPoint);
             }
 
-
-            //googleMap.addMarker(new MarkerOptions()
-            //        .position(latLngs.get(0))
-            //        .title("marker"));
 
             Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                     .clickable(true)
@@ -154,10 +161,26 @@ public class MapActivity extends AppCompatActivity
             }
             manageFav(polyline.getTag().toString(), tableName);
 
+            viewBinding.btnShare.setVisibility(View.VISIBLE);
+            viewBinding.btnShare.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view){
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("video/*");
+                    Uri videoUri = FileProvider.getUriForFile(MapActivity.this, getApplicationContext().getPackageName() + ".fileprovider", new File(path));
+
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, videoUri);
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(shareIntent, "비디오 공유하기"));
+                }
+            });
+
 
             viewBinding.videoPreview.setVideoPath(path);
             videoViewSetting();
             viewBinding.textPreviewTitle.setText(polyline.getTag().toString());
+
+
 
 
         }else{
@@ -172,27 +195,52 @@ public class MapActivity extends AppCompatActivity
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
                 int videoDuration = viewBinding.videoPreview.getDuration();
+                viewBinding.seekBar.setMax(videoDuration);
             }
         });
+
 
         viewBinding.videoPreview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 //동영상 재생 완료 후
-                viewBinding.btnPlayPreview.setText("재생하기");
 
             }
         });
 
-        viewBinding.btnPlayPreview.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                if(!viewBinding.videoPreview.isPlaying()){
+        viewBinding.videoPreview.setOnTouchListener((view, motionEvent)->{
+            if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                if(isVideoPlaying){
+                    viewBinding.videoPreview.pause();
+                }else{
                     viewBinding.videoPreview.start();
-                    viewBinding.btnPlayPreview.setText("일시정지");
+                    updateSeekBar();
+                }
+                isVideoPlaying = !isVideoPlaying;
+            }
+            return true;
+        });
+
+        viewBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) {
+                    isUserSeeking = true;
+                    viewBinding.videoPreview.seekTo(progress);
                 }
             }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                isUserSeeking = false;
+            }
         });
+
     }
 
     public void manageFav(String fileName, String tableName){
@@ -214,5 +262,21 @@ public class MapActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    private void updateSeekBar(){
+        if(viewBinding.videoPreview.isPlaying() && !isUserSeeking){
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    int currentPosition = viewBinding.videoPreview.getCurrentPosition();
+                    viewBinding.seekBar.setProgress(currentPosition);
+
+                    if(viewBinding.videoPreview.isPlaying())
+                        updateSeekBar();
+                }
+            }, 1000);
+
+        }
     }
 }

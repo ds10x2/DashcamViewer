@@ -44,7 +44,7 @@
         android:layout_height="match_parent"
         android:gravity="bottom"
         app:umanoDragView="@id/pannelFront"
-        app:umanoPanelHeight="200dp">
+        app:umanoPanelHeight="250dp">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -71,7 +71,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/pannelFront"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="450dp"
             android:background="@color/main_background">
             <ImageView
             android:layout_width="wrap_content"
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textPreview"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="60dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:text="위치를 선택해주세요."
@@ -109,44 +109,61 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:layout_constraintDimensionRatio="16:9"
-                    app:layout_constraintWidth_percent="0.5"
+                    app:layout_constraintWidth_default="percent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginLeft="10dp">
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent">
                 </VideoView>
+                <SeekBar
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/videoPreview"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/seekBar"
+                    android:progressDrawable="@drawable/seekbar_progress"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:padding="4dp"
+
+                    ></SeekBar>
                 <TextView
                     android:id="@+id/textPreviewTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintLeft_toRightOf="@id/videoPreview"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/seekBar"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginLeft="15dp"
                     android:text="파일명"
                     android:textColor="#000"
                     android:fontFamily="@font/nanumsquareroundr"
                     android:textSize="10dp"/>
-                <Button
-                    android:id="@+id/btnPlayPreview"
-                    android:layout_width="0dp"
-                    app:layout_constraintWidth_percent="0.4"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@id/videoPreview"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:layout_marginRight="10dp"
-                    android:text="재생하기"
-                    android:fontFamily="@font/nanumsquareroundb"
-                    android:textColor="#fff"
-                    android:background="#666A73"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
             <Button
                 android:id="@+id/btnFavorite"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:layout_constraintWidth_percent="0.5"
                 app:layout_constraintBottom_toBottomOf="@+id/pannelFront"
+                app:layout_constraintLeft_toLeftOf="parent"
                 android:text="즐겨찾기에 추가"
                 android:fontFamily="@font/nanumsquareroundb"
                 android:textColor="#fff"
                 android:background="@color/main_color"
+                android:visibility="gone"
+                />
+            <Button
+                android:id="@+id/btnShare"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintWidth_percent="0.5"
+                app:layout_constraintBottom_toBottomOf="@+id/pannelFront"
+                app:layout_constraintRight_toRightOf="parent"
+                android:text="공유하기"
+                android:fontFamily="@font/nanumsquareroundb"
+                android:textColor="#000"
+                android:background="#fff"
                 android:visibility="gone"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>

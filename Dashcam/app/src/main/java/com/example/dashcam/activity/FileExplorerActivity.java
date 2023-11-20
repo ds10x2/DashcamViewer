@@ -84,6 +84,7 @@ public class FileExplorerActivity extends AppCompatActivity {
         adapterFav = new ArrayAdapter(this, android.R.layout.simple_list_item_1, fileListFav);
 
 
+
         allPermissionsGranted();
         refreshFiles();
 
@@ -110,7 +111,7 @@ public class FileExplorerActivity extends AppCompatActivity {
                     mEvery.setTextColor(Color.rgb(0, 0, 0));
 
                     mFileList.setAdapter(adapterFav); // 리스트 뷰에 어댑터 연결
-                    mFileList.setOnItemClickListener(mItemClickListener);
+                    mFileList.setOnItemClickListener(favItemClickListener);
                 }
                 else{
                     mFavorite.setBackgroundColor(Color.rgb(252,252,252));
