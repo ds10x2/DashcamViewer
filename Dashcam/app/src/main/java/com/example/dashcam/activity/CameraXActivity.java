@@ -74,8 +74,8 @@ public class CameraXActivity extends AppCompatActivity {
     ExecutorService cameraExecutor;
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private boolean isRecording = false;
-    private long RECORDING_DURATION = 30000; //30초 (밀리초) 타이머가 n번 돌아가는 총 시간
-    private long COUNTDOWN_INTERVAL = 10000;
+    private long RECORDING_DURATION = 7200000; //1분 (밀리초) 타이머가 n번 돌아가는 총 시간
+    private long COUNTDOWN_INTERVAL = 60000;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double currentLatitude = 1;
@@ -322,7 +322,7 @@ public class CameraXActivity extends AppCompatActivity {
                         viewBinding.viewFinder.getSurfaceProvider());
 
                 Recorder recorder = new Recorder.Builder()
-                        .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+                        .setQualitySelector(QualitySelector.from(Quality.HD))
                         .build();
                 videoCapture = VideoCapture.withOutput(recorder);
 

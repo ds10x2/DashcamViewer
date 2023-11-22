@@ -28,6 +28,7 @@ import com.example.dashcam.R;
 import com.example.dashcam.SQLiteHelper;
 import com.example.dashcam.SQLiteHelperSingleton;
 import com.example.dashcam.adapter.ListItemFav;
+import com.example.dashcam.adapter.ListItemFavAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class FileExplorerActivity extends AppCompatActivity {
     Button mEvery;
 
     ArrayList<ListItemFav> fileListFav;
-    ArrayAdapter adapterFav;
+    ListItemFavAdapter adapterFav;
     SQLiteHelper sqLiteHelper;
 
 
@@ -80,8 +81,10 @@ public class FileExplorerActivity extends AppCompatActivity {
         mFileList.setAdapter(mAdapter); // 리스트 뷰에 어댑터 연결
         mFileList.setOnItemClickListener(mItemClickListener);
 
+
+        adapterFav = new ListItemFavAdapter();
         fileListFav = sqLiteHelper.getFavorite();
-        adapterFav = new ArrayAdapter(this, android.R.layout.simple_list_item_1, fileListFav);
+        adapterFav.addItem(fileListFav);
 
 
 
