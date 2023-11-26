@@ -42,6 +42,7 @@ import com.example.dashcam.LocationUtils;
 import com.example.dashcam.R;
 import com.example.dashcam.SQLiteHelper;
 import com.example.dashcam.SQLiteHelperSingleton;
+import com.example.dashcam.ShakeDetector;
 import com.example.dashcam.databinding.ActivityCameraxBinding;
 import com.example.dashcam.databinding.ActivityMainBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -65,7 +66,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class CameraXActivity extends AppCompatActivity {
+public class CameraXActivity extends AppCompatActivity implements ShakeDetector.ShakeListener {
+    private  ShakeDetector shakeDetector;
 
     private ActivityCameraxBinding viewBinding;
     private ImageCapture imageCapture;
@@ -110,6 +112,7 @@ public class CameraXActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
+        shakeDetector = new ShakeDetector(this, this);
 
         setTextRec();
         viewBinding.btnRecordStart.setOnClickListener(v -> repeatRecording());
@@ -138,9 +141,23 @@ public class CameraXActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        shakeDetector.startListening();
+    }
+
+    @Override
     protected void onPause(){
         super.onPause();
         stopRecording();
+        shakeDetector.stopListening();
+    }
+    @Override
+    public void onShakeDetected(){
+        //충격 감지되었을 때
+        if(isRecording){
+
+        }
     }
 
     private void settingRecCycle(){
