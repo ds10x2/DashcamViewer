@@ -29,10 +29,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     //앱이 최초 설치 시 실행될 onCreate 메소드
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase){
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Driving");
-        //sqLiteDatabase.execSQL("create table Members (mID integer primary key autoincrement, Name text, Age integer);");
-        //sqLiteDatabase.execSQL("INSERT INTO Members VALUES (1, 'Kim', 20);");
-        //sqLiteDatabase.execSQL("INSERT INTO Members VALUES (2, 'Lee', 30);");
 
         //주행 기록 저장 테이블
         //주행 시작 시각, 도착 시각
@@ -40,12 +36,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("create table Driving (mID integer primary key autoincrement, Start text, Arrive text);");
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Favorite");
         sqLiteDatabase.execSQL("create table Favorite (mID integer primary key autoincrement, Filename text, Tablename text)");
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Event");
+        sqLiteDatabase.execSQL("create table Event (mID integer primary key autoincrement, Tablename text, Filename text)");
 
-        //위치 기록 테이블
-        //위도, 경도 저장
-        //mID는 Driving 테이블의 mID 외래키
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Location");
-        //sqLiteDatabase.execSQL("create table Location (mID integer, dID integer, Latitude real, Longitude real, FOREIGN KEY (dID) REFERENCES Driving(mID));");
     }
 
     //앱이 업데이트 될 때 실행될 onUpgrade 메소드
@@ -121,6 +114,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public ArrayList<String> getEvent(String tableName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> result = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT Filename FROM Event Where Tablename = t" + tableName, null);
+        while(cursor.moveToNext()){
+            result.add(cursor.getString(0));
+        }
+        cursor.close();
+        return result;
+    }
+
     public String getTableNamewitheTitle(String videoTitle){
         SQLiteDatabase db = this.getReadableDatabase();
         String result = null;
@@ -180,6 +184,19 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return result;
+    }
+
+    public void insertEvent(String tableName, String fileName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put("Tablename", tableName);
+        cv.put("Filename", fileName);
+
+        long result = db.insert("Event", null, cv);
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void insertDriving(String st, String ar){

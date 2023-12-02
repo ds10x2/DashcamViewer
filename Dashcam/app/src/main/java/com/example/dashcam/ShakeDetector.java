@@ -9,8 +9,9 @@ import android.hardware.SensorManager;
 public class ShakeDetector implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private static final float SHAKE_THRESHOLD = 2.5f;
+    private static final float SHAKE_THRESHOLD = 9.5f;
     private ShakeListener shakeListener;
+    private Boolean isListening = false;
 
     public ShakeDetector(Context context, ShakeListener shakeListener) {
         this.shakeListener = shakeListener;
@@ -50,6 +51,7 @@ public class ShakeDetector implements SensorEventListener {
     public void startListening() {
         if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            isListening = true;
         }
     }
 
@@ -57,6 +59,11 @@ public class ShakeDetector implements SensorEventListener {
     //센서 리스너 해제
     public void stopListening() {
         sensorManager.unregisterListener(this);
+        isListening = false;
+    }
+
+    public Boolean isListening(){
+        return isListening;
     }
 
     public interface ShakeListener{

@@ -156,8 +156,10 @@ public class CameraXActivity extends AppCompatActivity implements ShakeDetector.
     @Override
     public void onShakeDetected(){
         //충격 감지되었을 때
-        if(isRecording){
-
+        if(isRecording && startTime != null && arriveTime != null){
+            sqLiteHelper.insertEvent(startTime, arriveTime);
+            //Toast.makeText(getApplicationContext(), "충격이 감지되었습니다.", Toast.LENGTH_SHORT).show();
+            shakeDetector.stopListening();
         }
     }
 
@@ -228,7 +230,11 @@ public class CameraXActivity extends AppCompatActivity implements ShakeDetector.
     private CountDownTimer timer = new CountDownTimer(RECORDING_DURATION, COUNTDOWN_INTERVAL){ //countDownInterval : 타이머 1번 돌아가는 시간
         @Override
         public void onTick(long milliisUntilFinished){
+
             startRecord();
+            if(!shakeDetector.isListening()){
+                shakeDetector.startListening();
+            }
         }
         @Override
         public void onFinish(){
