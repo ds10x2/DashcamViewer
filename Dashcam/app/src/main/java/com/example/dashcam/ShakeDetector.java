@@ -9,7 +9,7 @@ import android.hardware.SensorManager;
 public class ShakeDetector implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private static final float SHAKE_THRESHOLD = 9.5f;
+    private static final float SHAKE_THRESHOLD = 50f;
     private ShakeListener shakeListener;
     private Boolean isListening = false;
 

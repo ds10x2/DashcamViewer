@@ -144,7 +144,6 @@ public class CameraXActivity extends AppCompatActivity implements ShakeDetector.
     @Override
     protected void onResume(){
         super.onResume();
-        shakeDetector.startListening();
     }
 
     @Override
@@ -232,9 +231,6 @@ public class CameraXActivity extends AppCompatActivity implements ShakeDetector.
         public void onTick(long milliisUntilFinished){
 
             startRecord();
-            if(!shakeDetector.isListening()){
-                shakeDetector.startListening();
-            }
         }
         @Override
         public void onFinish(){
@@ -300,6 +296,7 @@ public class CameraXActivity extends AppCompatActivity implements ShakeDetector.
         }
         arriveTime = fileName;
 
+        shakeDetector.startListening();
 
         MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
                 .setContentValues(contentValues).build();
