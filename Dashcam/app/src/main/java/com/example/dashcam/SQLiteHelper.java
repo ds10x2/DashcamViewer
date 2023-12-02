@@ -117,7 +117,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<String> getEvent(String tableName){
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<String> result = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT Filename FROM Event Where Tablename = t" + tableName, null);
+        Cursor cursor = db.rawQuery("SELECT Filename FROM Event Where Tablename = '" + tableName + "'", null);
         while(cursor.moveToNext()){
             result.add(cursor.getString(0));
         }
@@ -190,7 +190,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put("Tablename", tableName);
+        cv.put("Tablename", "t" + tableName);
         cv.put("Filename", fileName);
 
         long result = db.insert("Event", null, cv);

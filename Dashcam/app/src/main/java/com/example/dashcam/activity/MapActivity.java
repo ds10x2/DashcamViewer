@@ -99,6 +99,7 @@ public class MapActivity extends AppCompatActivity
 
     public void onMapReady(GoogleMap googleMap) {
         ArrayList<String> timeList = sqLiteHelper.getTime(tableName);
+        ArrayList<String> event = sqLiteHelper.getEvent(tableName);
 
         //LatLng zoomPoint = new LatLng(37.5136944, 126.735084 );
 
@@ -113,10 +114,15 @@ public class MapActivity extends AppCompatActivity
 
 
             Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
+                    .width(10)
                     .clickable(true)
                     .addAll(latLngs));
 
             polyline1.setTag(start);
+
+            if(event.contains(start)){
+                polyline1.setColor(Color.BLUE);
+            }
 
             lastPoint = latLngs.get(latLngs.size() - 1);
 
