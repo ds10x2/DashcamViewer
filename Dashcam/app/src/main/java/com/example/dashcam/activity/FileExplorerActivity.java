@@ -27,8 +27,8 @@ import android.widget.Toast;
 import com.example.dashcam.R;
 import com.example.dashcam.SQLiteHelper;
 import com.example.dashcam.SQLiteHelperSingleton;
-import com.example.dashcam.adapter.ListItemFav;
-import com.example.dashcam.adapter.ListItemFavAdapter;
+import com.example.dashcam.listView.ListItemFav;
+import com.example.dashcam.listView.ListItemFavAdapter;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.dashcam.adapter;
+package com.example.dashcam.listView;
 
 public class ListItemFav {
     private String videoTitle;

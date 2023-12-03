@@ -159,7 +159,9 @@ public class MapActivity extends AppCompatActivity
                     + videoTitle.substring(8, 10) + "시 " + videoTitle.substring(10, 12) + "분";
             viewBinding.textDate.setText(date);
 
-            viewBinding.textLocation.setText(address);
+            String addressSelected = sqLiteHelper.getAddress(tableName, videoTitle);
+
+            viewBinding.textLocation.setText(addressSelected);
 
             viewBinding.btnFavorite.setVisibility(View.VISIBLE);
             if (sqLiteHelper.isFileExists(videoTitle)) {

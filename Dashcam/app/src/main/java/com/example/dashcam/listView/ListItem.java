@@ -1,4 +1,4 @@
-package com.example.dashcam.adapter;
+package com.example.dashcam.listView;
 
 public class ListItem {
     private String date;

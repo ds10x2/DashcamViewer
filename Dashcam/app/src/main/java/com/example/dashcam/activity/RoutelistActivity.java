@@ -7,16 +7,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.example.dashcam.SQLiteHelper;
 import com.example.dashcam.SQLiteHelperSingleton;
-import com.example.dashcam.activity.MapActivity;
-import com.example.dashcam.adapter.ListItem;
-import com.example.dashcam.adapter.ListItemAdapter;
+import com.example.dashcam.listView.ListItem;
+import com.example.dashcam.listView.ListItemAdapter;
 import com.example.dashcam.databinding.ActivityRoutelistBinding;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class RoutelistActivity extends AppCompatActivity {

@@ -9,11 +9,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.dashcam.adapter.ListItem;
-import com.example.dashcam.adapter.ListItemFav;
+import com.example.dashcam.listView.ListItem;
+import com.example.dashcam.listView.ListItemFav;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +52,26 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ArrayList<String> result = new ArrayList<>();
         while(cursor.moveToNext()){
             result.add(cursor.getString(0));
+        }
+        cursor.close();
+        return result;
+    }
+
+    public String getAddress(String tableName, String videoName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT Latitude, Longitude FROM " + tableName + " WHERE Start ='" + videoName + "'", null);
+        String result = null;
+        int latIndex  = cursor.getColumnIndex("Latitude");
+        int lonIndex = cursor.getColumnIndex("Longitude");
+
+        while(cursor.moveToNext()){
+            double latitude = cursor.getDouble(latIndex);
+            double longitude = cursor.getDouble(lonIndex);
+
+            result = LocationUtils.getInstance().getAddressFromLocation(context, latitude, longitude);
+            if(result.length() > 5){
+                break;
+            }
         }
         cursor.close();
         return result;

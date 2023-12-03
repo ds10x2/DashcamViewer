@@ -29,8 +29,15 @@ public class LocationUtils {
                 Address address = addresses.get(0);
 
                 String city = address.getLocality(); // 시
+                if(city == null){
+                    city = address.getAdminArea(); //광역시, 도
+                }
                 String district = address.getSubLocality(); // 구
+                if(district == null){
+                    district = address.getLocality();
+                }
                 String street = address.getThoroughfare(); // 동
+                String subThoroughfare = address.getSubThoroughfare(); //번지
 
                 // 주소를 조합하여 표시
                 StringBuilder addressStringBuilder = new StringBuilder();
@@ -42,6 +49,9 @@ public class LocationUtils {
                 }
                 if (street != null) {
                     addressStringBuilder.append(" ").append(street);
+                }
+                if(subThoroughfare != null){
+                    addressStringBuilder.append(" ").append(subThoroughfare);
                 }
 
                 String addressString = addressStringBuilder.toString();

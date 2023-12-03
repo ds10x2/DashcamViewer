@@ -1,4 +1,4 @@
-package com.example.dashcam.adapter;
+package com.example.dashcam.listView;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,8 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.dashcam.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
