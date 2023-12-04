@@ -159,7 +159,7 @@
             android:id="@+id/btn1"
             app:layout_constraintHorizontal_bias="0.7"
             android:text="영상 확인"
-            android:textSize="16dp"
+            android:textSize="14dp"
             android:fontFamily="@font/nanumsquareroundr"
             >
         </Button>
@@ -179,7 +179,7 @@
             app:layout_constraintHorizontal_bias="0.3"
             android:id="@+id/btn2"
             android:text="주행 기록"
-            android:textSize="16dp"
+            android:textSize="14dp"
             android:fontFamily="@font/nanumsquareroundr"
             ></Button>
 
