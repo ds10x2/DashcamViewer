@@ -50,6 +50,10 @@ public class FileExplorerActivity extends AppCompatActivity {
     ListItemFavAdapter adapterFav;
     SQLiteHelper sqLiteHelper;
 
+    private ArrayList<ListItemFav> fileListEvent;
+    ListItemFavAdapter adapterEvent;
+    Button btnEvent;
+
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     private static String[] permission = {
@@ -70,6 +74,7 @@ public class FileExplorerActivity extends AppCompatActivity {
         mBack = (ImageButton) findViewById(R.id.btnBack);
         mFavorite = (Button) findViewById(R.id.btnFav);
         mEvery = (Button) findViewById(R.id.btnEvery);
+        btnEvent = (Button) findViewById(R.id.btnEvent);
 
         mRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
         //mCurrent = mRoot;
@@ -85,6 +90,10 @@ public class FileExplorerActivity extends AppCompatActivity {
         adapterFav = new ListItemFavAdapter();
         fileListFav = sqLiteHelper.getFavorite();
         adapterFav.addItem(fileListFav);
+
+        adapterEvent = new ListItemFavAdapter();
+        fileListEvent = sqLiteHelper.getEvent();
+        adapterEvent.addItem(fileListEvent);
 
 
 
@@ -112,6 +121,8 @@ public class FileExplorerActivity extends AppCompatActivity {
 
                     mEvery.setBackgroundColor(Color.rgb(252, 252, 252));
                     mEvery.setTextColor(Color.rgb(0, 0, 0));
+                    btnEvent.setBackgroundColor(Color.rgb(252, 252, 252));
+                    btnEvent.setTextColor(Color.rgb(0, 0, 0));
 
                     mFileList.setAdapter(adapterFav); // 리스트 뷰에 어댑터 연결
                     mFileList.setOnItemClickListener(favItemClickListener);
@@ -122,6 +133,32 @@ public class FileExplorerActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        btnEvent.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent){
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                    //버튼이 눌렸을 때
+                    btnEvent.setBackgroundColor(Color.rgb(245, 245, 245));
+                }else if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                    btnEvent.setBackgroundColor(Color.rgb(124, 134, 222));
+                    btnEvent.setTextColor(Color.rgb(255,255,255));
+
+                    mEvery.setBackgroundColor(Color.rgb(252, 252, 252));
+                    mEvery.setTextColor(Color.rgb(0, 0, 0));
+                    mFavorite.setBackgroundColor(Color.rgb(252, 252, 252));
+                    mFavorite.setTextColor(Color.rgb(0, 0, 0));
+
+                    mFileList.setAdapter(adapterEvent); // 리스트 뷰에 어댑터 연결
+                    mFileList.setOnItemClickListener(eventItemClickListener);
+                }
+                else{
+                    btnEvent.setBackgroundColor(Color.rgb(252,252,252));
+                }
+                return false;
+            }
+        });
+
 
         mEvery.setOnTouchListener(new View.OnTouchListener(){
             @Override
@@ -135,6 +172,9 @@ public class FileExplorerActivity extends AppCompatActivity {
 
                     mFavorite.setBackgroundColor(Color.rgb(252, 252, 252));
                     mFavorite.setTextColor(Color.rgb(0, 0, 0));
+                    btnEvent.setBackgroundColor(Color.rgb(252, 252, 252));
+                    btnEvent.setTextColor(Color.rgb(0, 0, 0));
+
 
                     mFileList.setAdapter(mAdapter); // 리스트 뷰에 어댑터 연결
                     mFileList.setOnItemClickListener(mItemClickListener);
@@ -152,6 +192,20 @@ public class FileExplorerActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id){
             ListItemFav clickedItem = fileListFav.get(position);
+            String tableName = clickedItem.getTableName();
+            String videoTitle = clickedItem.getVideoTitle();
+
+            Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+            intent.putExtra("TableName", tableName);
+            intent.putExtra("VideoTitle", videoTitle);
+            startActivity(intent);
+        }
+    };
+
+    AdapterView.OnItemClickListener eventItemClickListener = new AdapterView.OnItemClickListener(){
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+            ListItemFav clickedItem = fileListEvent.get(position);
             String tableName = clickedItem.getTableName();
             String videoTitle = clickedItem.getVideoTitle();
 

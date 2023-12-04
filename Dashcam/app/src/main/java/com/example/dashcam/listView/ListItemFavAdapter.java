@@ -41,8 +41,10 @@ public class ListItemFavAdapter extends BaseAdapter {
 
         TextView title = view.findViewById(R.id.videoTitle);
 
+        String videoTitle = listItem.getVideoTitle();
+        String date = videoTitle.substring(0, 4) + "년 " + videoTitle.substring(4, 6) + "월 " + videoTitle.substring(6, 8) + "일 " + videoTitle.substring(8, 10) + "시 " + videoTitle.substring(10, 12) + "분 " + videoTitle.substring(12, 14) + "초";
 
-        title.setText(listItem.getVideoTitle());
+        title.setText(date);
 
 
         return view;

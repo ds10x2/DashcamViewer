@@ -11,8 +11,10 @@ import androidx.annotation.Nullable;
 
 import com.example.dashcam.listView.ListItem;
 import com.example.dashcam.listView.ListItemFav;
+import com.example.dashcam.listView.ListItemFavAdapter;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -305,6 +307,26 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ArrayList<ListItemFav> result = new ArrayList<>();
 
         String query = "SELECT Filename, Tablename FROM FAVORITE";
+        Cursor cursor = db.rawQuery(query, null);
+
+        int fileNameIndex = cursor.getColumnIndex("Filename");
+        int tablenameIndex = cursor.getColumnIndex("Tablename");
+        while(cursor.moveToNext()){
+            String filename = cursor.getString(fileNameIndex);
+            String tablename = cursor.getString(tablenameIndex);
+
+            ListItemFav listitem = new ListItemFav(filename, tablename);
+            result.add(listitem);
+        }
+        cursor.close();
+        return result;
+
+    }
+
+    public ArrayList<ListItemFav> getEvent(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<ListItemFav> result = new ArrayList<>();
+        String query = "SELECT Filename, Tablename FROM Event";
         Cursor cursor = db.rawQuery(query, null);
 
         int fileNameIndex = cursor.getColumnIndex("Filename");
