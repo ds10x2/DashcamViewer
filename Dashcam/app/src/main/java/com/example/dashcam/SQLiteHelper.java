@@ -95,7 +95,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             String addressDepart = null;
             String addressArrive = null;
 
-            Cursor cursor2 = db.rawQuery("SELECT Latitude, Longitude FROM t" + start + " LIMIT 1", null);
+            Cursor cursor2 = db.rawQuery("SELECT Latitude, Longitude FROM t" + start, null);
 
             int latitudeIndex = cursor2.getColumnIndex("Latitude");
             int longitudeIndex = cursor2.getColumnIndex("Longitude");
@@ -105,11 +105,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 double longitude = cursor2.getDouble(longitudeIndex);
 
                 addressDepart = LocationUtils.getInstance().getAddressFromLocation(context, latitude, longitude);
+                if(addressDepart != "Unknown Location"){
+                    break;
+                }
             }
 
             cursor2.close();
 
-            String query = "SELECT Latitude, Longitude FROM t" + start + " WHERE mID = (SELECT max(mID) FROM t" + start + ")";
+            String query = "SELECT Latitude, Longitude FROM t" + start + " ORDER BY mID DESC";
 
             Cursor cursor3 = db.rawQuery(query, null);
 
@@ -121,6 +124,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 double longitude = cursor3.getDouble(longitudeIndex);
 
                 addressArrive = LocationUtils.getInstance().getAddressFromLocation(context, latitude, longitude);
+                if(addressArrive != "Unknown Location"){
+                    break;
+                }
             }
 
             cursor3.close();
