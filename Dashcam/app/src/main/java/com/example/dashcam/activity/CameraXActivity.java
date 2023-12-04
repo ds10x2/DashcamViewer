@@ -420,7 +420,7 @@ public class CameraXActivity extends AppCompatActivity implements ShakeDetector.
                         String address = LocationUtils.getInstance().getAddressFromLocation(getApplicationContext(), currentLatitude, currentLongitude);
                         //viewBinding.locationTextView.setText(currentLatitude + " " + currentLongitude);
                         viewBinding.locationTextView.setText(address);
-                        viewBinding.textSpeed.setText(String.valueOf(speed));
+                        viewBinding.textSpeed.setText(String.valueOf(speed) + "km/h");
                         if(isRecording){
                             sqLiteHelper.insertLocation(startTime, arriveTime, currentLatitude, currentLongitude);
                         }
