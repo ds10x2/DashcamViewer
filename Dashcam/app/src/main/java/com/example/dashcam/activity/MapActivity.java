@@ -66,6 +66,7 @@ public class MapActivity extends AppCompatActivity
     private boolean isUserSeeking = false;
     private String videoTitle = null;
     private String address = null;
+    private ArrayList<String> event = null;
 
 
     @Override
@@ -99,7 +100,7 @@ public class MapActivity extends AppCompatActivity
 
     public void onMapReady(GoogleMap googleMap) {
         ArrayList<String> timeList = sqLiteHelper.getTime(tableName);
-        ArrayList<String> event = sqLiteHelper.getEvent(tableName);
+        event = sqLiteHelper.getEvent(tableName);
 
         //LatLng zoomPoint = new LatLng(37.5136944, 126.735084 );
 
@@ -188,7 +189,7 @@ public class MapActivity extends AppCompatActivity
             });
             viewBinding.videoPreview.setVideoPath(path);
             videoViewSetting();
-            viewBinding.textPreviewTitle.setText(videoTitle);
+            viewBinding.textPreviewTitle.setText(videoTitle + ".mp4");
         }
         else{
             viewBinding.textPreview.setText("동영상이 존재하지 않습니다.");
@@ -198,8 +199,16 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onPolylineClick(Polyline polyline){
 
+        if(isVideoPlaying){
+            viewBinding.videoPreview.pause();
+        }
+
         if (prevClickedPolyline != null) {
-            prevClickedPolyline.setColor(Color.BLACK); // 이전에 사용한 기본 색상으로 변경
+            if(event.contains(prevClickedPolyline.getTag())){
+                prevClickedPolyline.setColor(Color.BLUE);
+            } else{
+                prevClickedPolyline.setColor(Color.BLACK);
+            } // 이전에 사용한 기본 색상으로 변경
         }
 
         if ((polyline.getPattern() == null) || (!polyline.getPattern().contains(DOT))) {
@@ -224,6 +233,7 @@ public class MapActivity extends AppCompatActivity
             public void onPrepared(MediaPlayer mediaPlayer) {
                 int videoDuration = viewBinding.videoPreview.getDuration();
                 viewBinding.seekBar.setMax(videoDuration);
+                viewBinding.videoPreview.seekTo(0);
             }
         });
 
